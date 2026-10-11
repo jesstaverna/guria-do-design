@@ -19,7 +19,14 @@ async function signUp(formData: FormData) {
     email: String(formData.get('email') ?? '').trim(), password,
     options: { data: { full_name: name }, emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/login` },
   });
-  if (error) flash(back, 'err', 'Não foi possível criar a conta. Verifique os dados ou tente entrar.');
+  if (error) {
+    const known: Record<string, string> = {
+      email_exists: 'Este e-mail já tem conta. Tente entrar.', user_already_exists: 'Este e-mail já tem conta. Tente entrar.',
+      weak_password: 'Senha fraca. Use 8+ caracteres misturando letras e números.', over_email_send_rate_limit: 'Limite de e-mails do Supabase atingido. Aguarde cerca de 1 hora ou configure um SMTP próprio.',
+      email_address_invalid: 'E-mail inválido.', signup_disabled: 'Cadastro desativado no Supabase (Authentication → Sign In / Providers).',
+    };
+    flash(back, 'err', known[error.code ?? ''] ?? `Não foi possível criar a conta (${error.code ?? error.status ?? 'erro'}: ${error.message}).`);
+  }
   // Com confirmação de e-mail ativa no Supabase, não há sessão até o clique no link.
   if (!data.session) flash('/login', 'ok', 'Conta criada! Confirme seu e-mail para entrar.');
   redirect(next);
