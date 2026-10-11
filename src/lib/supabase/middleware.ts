@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Rotas acessíveis sem login: páginas de entrada, links públicos de proposta/contrato/convite e endpoints técnicos.
-const PUBLIC_PREFIXES = ['/login', '/cadastro', '/p/', '/c/', '/convite/', '/api/worker', '/api/health'];
+const PUBLIC_PREFIXES = ['/login', '/cadastro', '/esqueci-senha', '/auth/', '/p/', '/c/', '/convite/', '/api/worker', '/api/health'];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

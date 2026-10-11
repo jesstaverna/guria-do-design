@@ -17,7 +17,7 @@ async function signUp(formData: FormData) {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: String(formData.get('email') ?? '').trim(), password,
-    options: { data: { full_name: name }, emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/login` },
+    options: { data: { full_name: name }, emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/auth/callback?next=${encodeURIComponent(next)}` },
   });
   if (error) {
     const known: Record<string, string> = {
