@@ -11,7 +11,13 @@ async function signIn(formData: FormData) {
   const next = safeNext(String(formData.get('next') ?? ''));
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email: String(formData.get('email') ?? '').trim(), password: String(formData.get('password') ?? '') });
-  if (error) flash(`/login?next=${encodeURIComponent(next)}`, 'err', 'E-mail ou senha inválidos.'); // genérico: não revela se o e-mail existe
+  if (error) {
+    const back = `/login?next=${encodeURIComponent(next)}`;
+    // Credenciais erradas: mensagem genérica (não revela se o e-mail existe). Demais falhas mostram o motivo técnico.
+    if (error.code === 'invalid_credentials') flash(back, 'err', 'E-mail ou senha inválidos.');
+    if (error.code === 'email_not_confirmed') flash(back, 'err', 'E-mail ainda não confirmado. Confirme pelo link enviado ou peça ao suporte.');
+    flash(back, 'err', `Não foi possível entrar (${error.code ?? error.status ?? 'erro'}: ${error.message}).`);
+  }
   redirect(next);
 }
 
