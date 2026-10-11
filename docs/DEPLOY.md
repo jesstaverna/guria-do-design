@@ -11,7 +11,7 @@
    `insert into platform_admins (user_id) select id from auth.users where email = 'voce@dominio.com';`
 
 ## 3. Automações 24/7
-`/api/worker` com `Authorization: Bearer $CRON_SECRET`. Escolha **um** agendador: Vercel Cron (`vercel.json`, de hora em hora — alertas diários são idempotentes), `pg_cron + pg_net`, ou n8n. Verifique pelo painel de alertas e por `/api/health`.
+`/api/worker` com `Authorization: Bearer $CRON_SECRET`. Escolha **um** agendador: Vercel Cron (`vercel.json`, uma vez por dia às 10:00 UTC (limite do plano Hobby; no Pro pode ser de hora em hora)), `pg_cron + pg_net`, ou n8n. Verifique pelo painel de alertas e por `/api/health`.
 
 ## 4. Vendendo
 - Defina preços/limites em `plans` (`update plans set price_cents = ..., max_clients = ...`).

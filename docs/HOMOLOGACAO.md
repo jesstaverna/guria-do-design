@@ -17,7 +17,7 @@ Objetivo: colocar o Guria OS no ar num ambiente de teste real e validar o que os
    - `CRON_SECRET` (gere com `openssl rand -hex 32`)
    - `NEXT_PUBLIC_APP_URL` (a URL final, sem barra no fim)
 3. Deploy. Volte ao Supabase e confirme a *Site URL* com a URL real.
-4. `vercel.json` já agenda `/api/worker` de hora em hora (confira o limite de cron do seu plano).
+4. `vercel.json` já agenda `/api/worker` de hora em hora (no plano gratuito/Hobby o mínimo é 1x por dia).
 
 ## 3. Virar administradora da plataforma
 Crie sua conta pelo app (`/cadastro`), confirme o e-mail e rode no SQL Editor:
