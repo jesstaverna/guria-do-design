@@ -38,3 +38,7 @@ Precisa de URL pública com HTTPS (Railway, Render, Fly.io ou ngrok para testes)
 
 ## A verificar na primeira execução real
 O formato exato do botão no Private Reply e dos payloads de postback deve ser conferido com a sua conta (veja os logs em `DRY_RUN=false`).
+
+## Alternativa: n8n
+`n8n/workflow-instagram.json` é o mesmo fluxo pronto para importar no n8n (Workflows → Import from file).
+Edite o `CONFIG` no nó "Analisar evento" e o token no nó "Responder desafio". Para regenerar: `node n8n/build.mjs`.
