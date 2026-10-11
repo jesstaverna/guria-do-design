@@ -36,10 +36,12 @@ async function update(id: string, fd: FormData) {
 
 export default async function Plataforma() {
   const admin = await guard();
-  const [{ data: ws }, { data: members }] = await Promise.all([
-    admin.from('workspaces').select('id, name, slug, plan, status, trial_ends_at, billing_ref, created_at, owner:profiles!workspaces_owner_id_fkey(full_name, email)').order('created_at', { ascending: false }).limit(500),
+  const [{ data: ws }, { data: members }, { data: profiles }] = await Promise.all([
+    admin.from('workspaces').select('id, name, slug, plan, status, trial_ends_at, billing_ref, created_at, owner_id').order('created_at', { ascending: false }).limit(500),
     admin.from('workspace_members').select('workspace_id').eq('active', true),
+    admin.from('profiles').select('id, full_name, email'),
   ]);
+  const owners = new Map((profiles ?? []).map((p) => [p.id, p]));
   const count = new Map<string, number>();
   members?.forEach((m) => count.set(m.workspace_id, (count.get(m.workspace_id) ?? 0) + 1));
   const by = (s: string) => ws?.filter((w) => w.status === s).length ?? 0;
@@ -47,7 +49,7 @@ export default async function Plataforma() {
     <>
       <PageHeader title="Plataforma" subtitle={`${ws?.length ?? 0} estúdio(s) · ${by('active')} ativo(s) · ${by('trial')} em teste · ${by('past_due') + by('canceled')} inadimplente(s)/cancelado(s)`} />
       <div className="space-y-4">{ws?.map((w) => {
-        const o = w.owner as unknown as { full_name: string; email: string } | null;
+        const o = owners.get(w.owner_id);
         return (
           <form key={w.id} action={update.bind(null, w.id)} className="card grid gap-3 sm:grid-cols-6 sm:items-end">
             <div className="sm:col-span-2"><div className="font-medium">{w.name}</div><div className="text-xs text-muted">{o?.full_name} · {o?.email}</div><div className="text-xs text-muted">criado {dateBR(w.created_at)} · {count.get(w.id) ?? 0} pessoa(s) · teste até {dateTimeBR(w.trial_ends_at)}</div></div>

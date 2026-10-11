@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  /* Fontes da marca (Tusker/Standert) são licenciadas: adicione @font-face e coloque o nome aqui. */
+  --font-body: ui-sans-serif, system-ui, 'Helvetica Neue', Arial, sans-serif;
   --bg: 247 246 244;
   --surface: 255 255 255;
   --subtle: 238 237 233;
