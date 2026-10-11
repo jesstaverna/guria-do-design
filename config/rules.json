@@ -1,0 +1,19 @@
+[
+  {
+    "id": "ebook-prompts",
+    "palavras": ["quero", "eu quero", "prompts"],
+    "respostasPublicas": [
+      "Te enviei no direct! 💌",
+      "Mandei no seu direct, confere lá! ✨",
+      "Prontinho, olha seu direct! 💜"
+    ],
+    "dm": {
+      "texto": "Oi! Vi seu comentário 💜 Quer receber o material gratuito agora?",
+      "botao": "Quero receber"
+    },
+    "conteudo": {
+      "texto": "Aqui está o seu material gratuito 🎁\nhttps://guriadodesign.com.br/material\n\nSe gostar, me conta por aqui!"
+    },
+    "posts": []
+  }
+]

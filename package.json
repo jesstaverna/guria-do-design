@@ -1,0 +1,22 @@
+{
+  "name": "guria-automacao",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Central de automação própria da Guria do Design: comentário no Instagram -> DM com conteúdo gratuito",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "fastify": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
