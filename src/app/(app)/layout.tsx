@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { Bell } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { requireWorkspace, trialDaysLeft, WS_COOKIE } from '@/lib/session';
 import { MODULES, ROLE_LABEL } from '@/lib/permissions';
 import { Sidebar } from '@/components/Sidebar';
@@ -26,8 +27,14 @@ async function switchWs(fd: FormData) {
 }
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { supabase, profile, ws, role, isAdmin, open, memberships } = await requireWorkspace();
-  const items = MODULES.filter((m) => !m.adminOnly || isAdmin).map(({ key, label, href, icon, group }) => ({ key, label, href, icon, group }));
+  const { supabase, user, profile, ws, role, isAdmin, open, memberships } = await requireWorkspace();
+  // Administrador da plataforma (você, que vende o sistema): consulta pontual com a service role, só no servidor.
+  let isMaster = false;
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const { data } = await createAdminClient().from('platform_admins').select('user_id').eq('user_id', user.id).maybeSingle();
+    isMaster = !!data;
+  }
+  const items = MODULES.filter((m) => (m.key === 'plataforma' ? isMaster : !m.adminOnly || isAdmin)).map(({ key, label, href, icon, group }) => ({ key, label, href, icon, group }));
   const { count } = await supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('workspace_id', ws.id).is('read_at', null);
   const days = trialDaysLeft(ws);
 

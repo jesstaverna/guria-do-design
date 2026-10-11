@@ -1,6 +1,6 @@
 export type ModuleKey =
   | 'dashboard' | 'crm' | 'clientes' | 'propostas' | 'contratos' | 'projetos' | 'tarefas' | 'agenda' | 'conteudo' | 'trafego'
-  | 'financeiro' | 'planejamento' | 'equipe' | 'configuracoes' | 'plano';
+  | 'financeiro' | 'planejamento' | 'equipe' | 'configuracoes' | 'plano' | 'plataforma';
 
 export interface ModuleDef { key: ModuleKey; label: string; href: string; icon: string; group: string; adminOnly?: boolean }
 
@@ -20,6 +20,8 @@ export const MODULES: ModuleDef[] = [
   { key: 'equipe', label: 'Equipe', href: '/equipe', icon: 'user-plus', group: 'Conta', adminOnly: true },
   { key: 'configuracoes', label: 'Configurações', href: '/configuracoes', icon: 'settings', group: 'Conta', adminOnly: true },
   { key: 'plano', label: 'Plano e cobrança', href: '/plano', icon: 'credit-card', group: 'Conta', adminOnly: true },
+  // Só aparece para quem está em platform_admins (ver layout). A página valida de novo no servidor.
+  { key: 'plataforma', label: 'Plataforma (master)', href: '/plataforma', icon: 'shield', group: 'Conta', adminOnly: true },
 ];
 
 export const ROLE_LABEL: Record<string, string> = { owner: 'Titular', admin: 'Administrador', member: 'Equipe' };
