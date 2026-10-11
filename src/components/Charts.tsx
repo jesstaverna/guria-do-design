@@ -23,7 +23,7 @@ export function RevenueChart({ data, aLabel = 'Recebido', bLabel = 'Despesas pag
           const cx = pad.l + slot * i + slot / 2;
           return (
             <g key={d.label}>
-              <rect x={cx - bw - 1} y={y(d.a)} width={bw} height={Math.max(h - pad.b - y(d.a), 0)} rx="3" fill="#dd00dd"><title>{`${d.label} — ${aLabel} ${moneyCompact(d.a)}`}</title></rect>
+              <rect x={cx - bw - 1} y={y(d.a)} width={bw} height={Math.max(h - pad.b - y(d.a), 0)} rx="3" style={{ fill: 'rgb(var(--accent))' }}><title>{`${d.label} — ${aLabel} ${moneyCompact(d.a)}`}</title></rect>
               <rect x={cx + 1} y={y(d.b ?? 0)} width={bw} height={Math.max(h - pad.b - y(d.b ?? 0), 0)} rx="3" fill="#7327ea"><title>{`${d.label} — ${bLabel} ${moneyCompact(d.b ?? 0)}`}</title></rect>
               <text x={cx} y={h - 10} fontSize="10" textAnchor="middle" fill="rgb(var(--muted))">{d.label}</text>
             </g>
@@ -50,8 +50,8 @@ export function LineChart({ points, label, format = (v: number) => String(v) }: 
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label={label}>
       <line x1={p.l} x2={w - p.r} y1={h - p.b} y2={h - p.b} stroke="rgb(var(--line))" />
       <text x={p.l} y={p.t - 3} fontSize="10" fill="rgb(var(--muted))">{format(max)}</text>
-      <path d={d} fill="none" stroke="#dd00dd" strokeWidth="2" strokeLinejoin="round" />
-      {points.map((q, i) => <circle key={q.x} cx={X(i)} cy={Y(q.y)} r="2.5" fill="#dd00dd"><title>{`${q.x}: ${format(q.y)}`}</title></circle>)}
+      <path d={d} fill="none" style={{ stroke: 'rgb(var(--accent))' }} strokeWidth="2" strokeLinejoin="round" />
+      {points.map((q, i) => <circle key={q.x} cx={X(i)} cy={Y(q.y)} r="2.5" style={{ fill: 'rgb(var(--accent))' }}><title>{`${q.x}: ${format(q.y)}`}</title></circle>)}
       <text x={p.l} y={h - 6} fontSize="10" fill="rgb(var(--muted))">{points[0].x}</text>
       <text x={w - p.r} y={h - 6} fontSize="10" textAnchor="end" fill="rgb(var(--muted))">{points[points.length - 1].x}</text>
     </svg>

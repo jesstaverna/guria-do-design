@@ -28,7 +28,7 @@ export function Sidebar({ items, userName, roleLabel, wsName, logoUrl, avatarUrl
               const active = pathname === m.href || pathname.startsWith(m.href + '/');
               return (
                 <Link key={m.key} href={m.href} onClick={() => setOpen(false)} aria-current={active ? 'page' : undefined}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${active ? 'bg-accent font-medium text-white' : 'text-fg/80 hover:bg-subtle'}`}>
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${active ? 'bg-accent font-medium text-on-accent' : 'text-fg/80 hover:bg-subtle'}`}>
                   <Icon name={m.icon} /><span className="flex-1">{m.label}</span>
                 </Link>
               );
@@ -42,7 +42,7 @@ export function Sidebar({ items, userName, roleLabel, wsName, logoUrl, avatarUrl
   const brand = (
     <div className="flex items-center gap-2.5 px-6 pb-4 pt-6">
       {logoUrl /* eslint-disable-next-line @next/next/no-img-element */ ? <img src={logoUrl} alt={wsName} className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain p-0.5" />
-        : <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-bold text-white">G</span>}
+        : <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-bold text-on-accent">G</span>}
       <div className="min-w-0 leading-tight"><div className="truncate text-sm font-semibold tracking-wide">{wsName}</div><div className="truncate text-[11px] text-muted">{APP_NAME}</div></div>
     </div>
   );

@@ -8,7 +8,7 @@ export const metadata = { title: 'Agenda e prazos' };
 
 interface Item { date: string; label: string; href: string; kind: 'tarefa' | 'post' | 'financeiro' | 'proposta' | 'projeto' | 'lead'; late?: boolean }
 const KIND: Record<Item['kind'], string> = {
-  tarefa: 'bg-accent/15 text-accent', post: 'bg-violet-brand/15 text-violet-brand', financeiro: 'bg-ok/15 text-ok',
+  tarefa: 'bg-accent/15 text-accent-ink', post: 'bg-violet-brand/15 text-violet-brand', financeiro: 'bg-ok/15 text-ok',
   proposta: 'bg-amber-500/15 text-warn', projeto: 'bg-blue-500/15 text-blue-600', lead: 'bg-subtle text-muted',
 };
 const KIND_LABEL: Record<Item['kind'], string> = { tarefa: 'Tarefa', post: 'Publicação', financeiro: 'Financeiro', proposta: 'Proposta', projeto: 'Projeto', lead: 'Follow-up' };
@@ -55,7 +55,7 @@ export default async function Agenda({ searchParams }: { searchParams: Promise<{
               const list = byDay.get(c.date) ?? [];
               return (
                 <div key={c.date} className={`min-h-28 p-1.5 ${c.inMonth ? '' : 'bg-subtle/40 text-muted'} ${c.date === today ? 'bg-accent/5' : ''}`}>
-                  <div className={`mb-1 text-right text-xs ${c.date === today ? 'font-bold text-accent' : 'text-muted'}`}>{pad2(Number(c.date.slice(8)))}</div>
+                  <div className={`mb-1 text-right text-xs ${c.date === today ? 'font-bold text-accent-ink' : 'text-muted'}`}>{pad2(Number(c.date.slice(8)))}</div>
                   <div className="space-y-1">
                     {list.slice(0, 4).map((i, n) => <Link key={n} href={i.href} title={i.label} className={`block truncate rounded px-1.5 py-0.5 text-[11px] ${KIND[i.kind]} ${i.late ? 'ring-1 ring-danger' : ''}`}>{i.label}</Link>)}
                     {list.length > 4 && <div className="px-1 text-[11px] text-muted">+{list.length - 4}</div>}

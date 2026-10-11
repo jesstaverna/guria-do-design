@@ -37,7 +37,7 @@ export default async function Plano() {
       <div className="grid gap-4 md:grid-cols-2">
         {plans?.map((p) => (
           <div key={p.key} className={`card ${p.key === ws.plan ? 'border-accent' : ''}`}>
-            <div className="flex items-baseline justify-between"><h3 className="text-lg font-semibold">{p.name}</h3>{p.key === ws.plan && <Badge tone="bg-accent/15 text-accent">Seu plano</Badge>}</div>
+            <div className="flex items-baseline justify-between"><h3 className="text-lg font-semibold">{p.name}</h3>{p.key === ws.plan && <Badge tone="bg-accent/15 text-accent-ink">Seu plano</Badge>}</div>
             <div className="mt-2 text-2xl font-semibold">{money(p.price_cents)}<span className="text-sm font-normal text-muted">/mês</span></div>
             <ul className="mt-4 space-y-1.5 text-sm text-muted"><li>✓ Todos os módulos</li><li>✓ {p.max_members ? `${p.max_members} pessoa${p.max_members > 1 ? 's' : ''}` : 'Equipe ilimitada'}</li><li>✓ {p.max_clients ? `Até ${p.max_clients} clientes` : 'Clientes ilimitados'}</li></ul>
           </div>

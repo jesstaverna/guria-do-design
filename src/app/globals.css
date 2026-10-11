@@ -5,6 +5,11 @@
 :root {
   /* Fontes da marca (Tusker/Standert) são licenciadas: adicione @font-face e coloque o nome aqui. */
   --font-body: ui-sans-serif, system-ui, 'Helvetica Neue', Arial, sans-serif;
+  /* Cor da marca: padrão do produto; o layout do app sobrescreve com a cor do estúdio (src/lib/brand-color.ts). */
+  --accent: 221 0 221;
+  --accent-dark: 181 0 181;
+  --accent-ink: 187 0 187;
+  --on-accent: 255 255 255;
   --bg: 247 246 244;
   --surface: 255 255 255;
   --subtle: 238 237 233;
@@ -34,7 +39,7 @@ body { @apply bg-bg text-fg font-sans antialiased; }
 @layer components {
   .card { @apply rounded-2xl border border-line bg-surface p-6; }
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium transition hover:bg-subtle disabled:opacity-50; }
-  .btn-primary { @apply border-transparent bg-accent text-white hover:bg-accent-dark; }
+  .btn-primary { @apply border-transparent bg-accent text-on-accent hover:bg-accent-dark; }
   .btn-dark { @apply border-transparent bg-fg text-bg hover:opacity-90; }
   .btn-danger { @apply border-transparent bg-danger text-white hover:opacity-90; }
   .btn-sm { @apply px-3 py-1.5 text-xs; }

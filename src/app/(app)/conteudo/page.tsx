@@ -61,7 +61,7 @@ export default async function Conteudo({ searchParams }: { searchParams: Promise
             <div key={wi} className="grid grid-cols-7 divide-x divide-line border-b border-line last:border-b-0">
               {w.map((c) => (
                 <div key={c.date} className={`min-h-28 p-1.5 ${c.inMonth ? '' : 'bg-subtle/40'} ${c.date === today ? 'bg-accent/5' : ''}`}>
-                  <div className="mb-1 flex items-center justify-between text-xs text-muted">{open && c.inMonth ? <Link href={`/conteudo/novo?date=${c.date}${sp.network ? `&network=${sp.network}` : ''}`} className="opacity-0 hover:opacity-100 focus:opacity-100" aria-label={`Novo conteúdo em ${dateBR(c.date)}`}>+</Link> : <span />}<span className={c.date === today ? 'font-bold text-accent' : ''}>{pad2(Number(c.date.slice(8)))}</span></div>
+                  <div className="mb-1 flex items-center justify-between text-xs text-muted">{open && c.inMonth ? <Link href={`/conteudo/novo?date=${c.date}${sp.network ? `&network=${sp.network}` : ''}`} className="opacity-0 hover:opacity-100 focus:opacity-100" aria-label={`Novo conteúdo em ${dateBR(c.date)}`}>+</Link> : <span />}<span className={c.date === today ? 'font-bold text-accent-ink' : ''}>{pad2(Number(c.date.slice(8)))}</span></div>
                   <div className="space-y-1">{(byDay.get(c.date) ?? []).map((p) => (
                     <Link key={p.id} href={`/conteudo/${p.id}`} title={`${NETWORKS[p.network]?.label} · ${FORMATS[p.format]} · ${p.title}`} className={`block truncate rounded border-l-4 bg-subtle px-1.5 py-0.5 text-[11px] ${p.status === 'publicado' ? 'opacity-60' : ''}`} style={{ borderColor: NETWORKS[p.network]?.color }}>{p.title}</Link>))}</div>
                 </div>

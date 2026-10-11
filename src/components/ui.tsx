@@ -13,10 +13,10 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 export function Stat({ label, value, hint, tone, href }: { label: string; value: ReactNode; hint?: ReactNode; tone?: 'danger' | 'ok' | 'accent'; href?: string }) {
   const accent = tone === 'accent';
   const body = (
-    <div className={`card h-full ${accent ? 'border-transparent bg-accent text-white' : ''}`}>
-      <div className={`text-xs font-medium uppercase tracking-wider ${accent ? 'text-white/70' : 'text-muted'}`}>{label}</div>
+    <div className={`card h-full ${accent ? 'border-transparent bg-accent text-on-accent' : ''}`}>
+      <div className={`text-xs font-medium uppercase tracking-wider ${accent ? 'text-on-accent/70' : 'text-muted'}`}>{label}</div>
       <div className={`mt-3 text-2xl font-semibold tracking-tight ${tone === 'danger' ? 'text-danger' : tone === 'ok' ? 'text-ok' : ''}`}>{value}</div>
-      {hint && <div className={`mt-1.5 text-xs ${accent ? 'text-white/70' : 'text-muted'}`}>{hint}</div>}
+      {hint && <div className={`mt-1.5 text-xs ${accent ? 'text-on-accent/70' : 'text-muted'}`}>{hint}</div>}
     </div>
   );
   return href ? <Link href={href} className="block transition hover:opacity-90">{body}</Link> : body;

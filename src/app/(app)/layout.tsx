@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireWorkspace, trialDaysLeft, WS_COOKIE } from '@/lib/session';
 import { MODULES, ROLE_LABEL } from '@/lib/permissions';
+import { brandVars } from '@/lib/brand-color';
 import { Sidebar } from '@/components/Sidebar';
 import { Flash } from '@/components/Flash';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -39,7 +40,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const days = trialDaysLeft(ws);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={brandVars(ws.brand_color) as React.CSSProperties}>
       <Suspense><Flash /></Suspense>
       <Sidebar items={items} userName={profile.full_name || profile.email || 'Usuário'} roleLabel={ROLE_LABEL[role]} wsName={ws.name} logoUrl={ws.logo_url} avatarUrl={profile.avatar_url}
         workspaces={memberships.map((m) => ({ id: m.workspace.id, name: m.workspace.name }))} currentWs={ws.id} signOut={signOut} switchWs={switchWs} />
@@ -52,7 +53,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="flex items-center justify-end gap-2 px-6 pt-5 max-lg:hidden lg:px-10">
           <Link href="/alertas" className="btn btn-sm relative" aria-label={`Alertas${count ? `: ${count} não lidos` : ''}`}>
             <Bell className="h-4 w-4" strokeWidth={1.6} />
-            {!!count && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">{count > 99 ? '99+' : count}</span>}
+            {!!count && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-on-accent">{count > 99 ? '99+' : count}</span>}
           </Link>
           <ThemeToggle />
         </div>

@@ -2,6 +2,7 @@ import { requireWorkspace } from '@/lib/session';
 import { Field, PageHeader, Section } from '@/components/ui';
 import { SubmitButton } from '@/components/SubmitButton';
 import { Avatar } from '@/components/Avatar';
+import { BrandColorField } from '@/components/BrandColorField';
 import { removeAvatar, removeLogo, saveProfile, saveWorkspace, uploadAvatar, uploadLogo } from './actions';
 
 export const metadata = { title: 'Configurações' };
@@ -54,7 +55,7 @@ export default async function Configuracoes() {
           <Field label="Endereço" className="sm:col-span-2"><input name="address" defaultValue={ws.address ?? ''} className="input" /></Field>
           <Field label="Cidade / UF" hint="Usada como foro dos contratos."><input name="city" defaultValue={ws.city ?? ''} className="input" /></Field>
           <Field label="Site"><input name="website" defaultValue={ws.website ?? ''} className="input" /></Field>
-          <Field label="Cor da marca nas propostas"><input name="brand_color" type="color" defaultValue={ws.brand_color} className="h-11 w-20 rounded-xl border border-line bg-surface p-1" aria-label="Cor da marca" /></Field>
+          <Field label="Cor da marca" className="sm:col-span-2" hint="Aplicada no sistema inteiro (menu, botões, gráficos) e nas propostas e contratos."><BrandColorField defaultValue={ws.brand_color} /></Field>
           <Field label="Alíquota de imposto estimada (%)" hint="Usada no painel e na calculadora de metas. Confirme com seu contador."><input name="tax_rate_pct" inputMode="decimal" defaultValue={String(ws.tax_rate_pct).replace('.', ',')} className="input" /></Field>
           <div className="sm:col-span-2"><SubmitButton>Salvar configurações</SubmitButton></div>
         </fieldset>

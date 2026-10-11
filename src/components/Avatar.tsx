@@ -4,5 +4,5 @@ export function Avatar({ url, name, size = 36 }: { url?: string | null; name: st
   const style = { width: size, height: size, fontSize: Math.round(size * 0.38) };
   // eslint-disable-next-line @next/next/no-img-element
   return url ? <img src={url} alt={name} style={style} className="shrink-0 rounded-full object-cover" />
-    : <span style={style} aria-label={name} className="grid shrink-0 place-items-center rounded-full bg-accent/15 font-semibold text-accent">{initials}</span>;
+    : <span style={style} aria-label={name} className="grid shrink-0 place-items-center rounded-full bg-accent/15 font-semibold text-accent-ink">{initials}</span>;
 }
