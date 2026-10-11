@@ -68,3 +68,9 @@ Para cada problema: tela, o que esperava, o que aconteceu (print ajuda). Traga a
 - [ ] Termos de uso e política de privacidade (LGPD) publicados
 - [ ] Definir preços em `plans` (sugestão: Solo R$ 49 / Estúdio R$ 99)
 - [ ] Backups ativos no Supabase (plano Pro) e teste de restauração
+
+## Notas sobre a Vercel (aprendido na primeira publicação)
+- Use um **projeto Vercel só do Guria OS**. Não reaproveite um projeto que já publique outra coisa (a página inicial dá 404).
+- Cadastre as variáveis em **Production e Preview**; variáveis só em Production não chegam nos deploys de branch.
+- Plano Hobby: cron só 1x/dia (já configurado em `vercel.json`) e uso não comercial; para vender, use o plano Pro.
+- Variáveis `NEXT_PUBLIC_*` não podem ser marcadas como *Sensitive*.
