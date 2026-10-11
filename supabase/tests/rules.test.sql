@@ -239,3 +239,23 @@ insert into public.budgets (workspace_id, category_id, month, planned_cents)
   values (t.get('wsA')::uuid, (select id from public.fin_categories where name = 'Software e ferramentas'), date_trunc('month', current_date)::date, 50000);
 select t.raises(format($$insert into public.budgets (workspace_id, category_id, month, planned_cents) values (%L, (select id from public.fin_categories where name = 'Impostos'), '2026-10-15', 1)$$, t.get('wsA')), '23514');
 reset role;
+
+-- ===== branding (storage) =====
+select t.ok((select public and file_size_limit = 2097152 from storage.buckets where id = 'branding'), 'bucket branding público com limite de 2 MB');
+select t.login('00000000-0000-0000-0000-00000000000a'); set role authenticated;
+insert into storage.objects (bucket_id, name) values ('branding', 'ws/' || t.get('wsA') || '/logo-1.png');
+select t.raises(format($$insert into storage.objects (bucket_id, name) values ('branding', 'ws/%s/logo-1.png')$$, t.get('wsB')), '42501');   -- outro tenant
+insert into storage.objects (bucket_id, name) values ('branding', 'users/00000000-0000-0000-0000-00000000000a/avatar-1.png');
+select t.raises($$insert into storage.objects (bucket_id, name) values ('branding', 'users/00000000-0000-0000-0000-00000000000b/avatar-1.png')$$, '42501');   -- avatar alheio
+select t.raises($$insert into storage.objects (bucket_id, name) values ('branding', 'ws/nao-e-uuid/logo.png')$$, '42501');
+select t.raises($$insert into storage.objects (bucket_id, name) values ('branding', 'logo.png')$$, '42501');
+update public.profiles set avatar_url = 'https://x/y.png' where id = '00000000-0000-0000-0000-00000000000a';
+reset role;
+select t.login('00000000-0000-0000-0000-00000000000c'); set role authenticated;   -- membro (não admin)
+select t.raises(format($$insert into storage.objects (bucket_id, name) values ('branding', 'ws/%s/logo-2.png')$$, t.get('wsA')), '42501');
+insert into storage.objects (bucket_id, name) values ('branding', 'users/00000000-0000-0000-0000-00000000000c/avatar-1.png');
+reset role;
+update public.workspaces set trial_ends_at = now() - interval '1 day' where id = t.get('wsB')::uuid;
+select t.login('00000000-0000-0000-0000-00000000000b'); set role authenticated;
+select t.raises(format($$insert into storage.objects (bucket_id, name) values ('branding', 'ws/%s/logo-3.png')$$, t.get('wsB')), '42501');   -- assinatura vencida
+reset role;

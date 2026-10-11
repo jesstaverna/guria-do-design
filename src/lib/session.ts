@@ -20,13 +20,13 @@ export const getSession = cache(async () => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return null;
   const [{ data: profile }, { data: rows }] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, email').eq('id', data.user.id).single(),
+    supabase.from('profiles').select('id, full_name, email, avatar_url').eq('id', data.user.id).single(),
     supabase.from('workspace_members').select(`role, workspace:workspaces(${WS_COLS})`).eq('user_id', data.user.id).eq('active', true),
   ]);
   const memberships = ((rows ?? []) as unknown as Membership[]).filter((m) => m.workspace);
   const wanted = (await cookies()).get(WS_COOKIE)?.value;
   const current = memberships.find((m) => m.workspace.id === wanted) ?? memberships[0] ?? null;
-  return { user: data.user, profile: profile as { id: string; full_name: string; email: string | null } | null, memberships, current };
+  return { user: data.user, profile: profile as { id: string; full_name: string; email: string | null; avatar_url: string | null } | null, memberships, current };
 });
 
 export function flash(path: string, kind: 'ok' | 'err', message: string): never {

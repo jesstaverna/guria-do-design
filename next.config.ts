@@ -10,6 +10,7 @@ const securityHeaders = [
 
 const config: NextConfig = {
   poweredByHeader: false,
+  experimental: { serverActions: { bodySizeLimit: '4mb' } }, // upload de logotipo/avatar (limite real: 2 MB, validado na ação)
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }];
   },

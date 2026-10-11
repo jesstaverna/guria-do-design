@@ -5,12 +5,13 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Icon } from './Icon';
 import { APP_NAME } from '@/lib/brand';
+import { Avatar } from './Avatar';
 
 export interface NavItem { key: string; label: string; href: string; icon: string; group: string }
 export interface WsOption { id: string; name: string }
 
-export function Sidebar({ items, userName, roleLabel, wsName, workspaces, currentWs, signOut, switchWs }: {
-  items: NavItem[]; userName: string; roleLabel: string; wsName: string; workspaces: WsOption[]; currentWs: string;
+export function Sidebar({ items, userName, roleLabel, wsName, logoUrl, avatarUrl, workspaces, currentWs, signOut, switchWs }: {
+  items: NavItem[]; userName: string; roleLabel: string; wsName: string; logoUrl: string | null; avatarUrl: string | null; workspaces: WsOption[]; currentWs: string;
   signOut: () => Promise<void>; switchWs: (fd: FormData) => Promise<void>;
 }) {
   const pathname = usePathname();
@@ -40,8 +41,9 @@ export function Sidebar({ items, userName, roleLabel, wsName, workspaces, curren
 
   const brand = (
     <div className="flex items-center gap-2.5 px-6 pb-4 pt-6">
-      <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-bold text-white">G</span>
-      <div className="min-w-0 leading-tight"><div className="text-sm font-semibold tracking-wide">{APP_NAME}</div><div className="truncate text-[11px] text-muted">{wsName}</div></div>
+      {logoUrl /* eslint-disable-next-line @next/next/no-img-element */ ? <img src={logoUrl} alt={wsName} className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain p-0.5" />
+        : <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-bold text-white">G</span>}
+      <div className="min-w-0 leading-tight"><div className="truncate text-sm font-semibold tracking-wide">{wsName}</div><div className="truncate text-[11px] text-muted">{APP_NAME}</div></div>
     </div>
   );
 
@@ -55,7 +57,7 @@ export function Sidebar({ items, userName, roleLabel, wsName, workspaces, curren
           </select>
         </form>
       )}
-      <div><div className="truncate text-sm font-medium">{userName}</div><div className="text-xs text-muted">{roleLabel}</div></div>
+      <div className="flex items-center gap-3"><Avatar url={avatarUrl} name={userName} size={36} /><div className="min-w-0"><div className="truncate text-sm font-medium">{userName}</div><div className="text-xs text-muted">{roleLabel}</div></div></div>
       <form action={signOut}><button className="btn btn-sm w-full">Sair</button></form>
     </div>
   );
