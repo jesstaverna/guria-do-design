@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Field, Badge } from '@/components/ui';
 import { SubmitButton } from '@/components/SubmitButton';
 import { AutoSelect } from '@/components/AutoSelect';
@@ -23,19 +24,19 @@ export function TaskFields({ t, projects, clients, members }: { t?: Partial<Task
   );
 }
 
-export function TaskCard({ t, back, canEdit, projects, clients, members, projectName, clientName, assigneeName }: {
-  t: TaskRow; back: string; canEdit: boolean; projects: Opt[]; clients: Opt[]; members: Opt[]; projectName?: string; clientName?: string; assigneeName?: string;
+export function TaskCard({ t, back, canEdit, projects, clients, members, projectName, clientName, assigneeName, attachments = 0 }: {
+  t: TaskRow; back: string; canEdit: boolean; projects: Opt[]; clients: Opt[]; members: Opt[]; projectName?: string; clientName?: string; assigneeName?: string; attachments?: number;
 }) {
   const late = t.status !== 'feito' && t.due_date && t.due_date < todayBR();
   return (
     <article className={`rounded-xl border bg-surface p-3.5 ${late ? 'border-danger/50' : 'border-line'}`}>
       <div className="flex items-start justify-between gap-2">
-        <div className={`text-sm font-medium ${t.status === 'feito' ? 'text-muted line-through' : ''}`}>{t.title}</div>
+        <Link href={`/tarefas/${t.id}`} className={`text-sm font-medium hover:underline ${t.status === 'feito' ? 'text-muted line-through' : ''}`}>{t.title}</Link>
         <Badge tone={PRIORITY[t.priority]?.tone}>{PRIORITY[t.priority]?.label}</Badge>
       </div>
       <div className="mt-1.5 flex flex-wrap gap-x-3 text-xs text-muted">
         {t.due_date && <span className={late ? 'font-medium text-danger' : ''}>⏱ {dateBR(t.due_date)}{late ? ' (atrasada)' : ''}</span>}
-        {projectName && <span>📁 {projectName}</span>}{clientName && <span>👤 {clientName}</span>}{assigneeName && <span>→ {assigneeName}</span>}
+        {attachments > 0 && <span title="Anexos">📎 {attachments}</span>}{projectName && <span>📁 {projectName}</span>}{clientName && <span>👤 {clientName}</span>}{assigneeName && <span>→ {assigneeName}</span>}
       </div>
       {canEdit && (
         <div className="mt-2.5 space-y-2">

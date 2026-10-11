@@ -30,12 +30,12 @@ Navegador ─► Next.js (Server Components + Server Actions, sessão do usuári
 | `/clientes` | Cadastro único; visão 360° |
 | `/propostas` | Modelos (identidade, social, landing, tráfego, consultoria), itens pontual/mensal, desconto, link público, aceite/pedido de alteração, PDF por impressão, ativação financeira (parcelas + mensalidades + projeto) |
 | `/contratos` | Modelos próprios + 3 padrões, variáveis preenchidas por estúdio/cliente/proposta, aceite eletrônico simples com evidências (nome, documento, IP, data, hash SHA-256) |
-| `/projetos`, `/tarefas`, `/agenda` | Projetos com progresso, Kanban de tarefas (prioridade, prazo, responsável), calendário unificado de prazos |
+| `/projetos`, `/tarefas`, `/agenda` | Projetos com progresso; tarefas em **Kanban ou Lista** (prioridade, prazo, responsável); **anexos** (arquivos até 25 MB em bucket privado + links, com Google Drive reconhecido e seletor oficial opcional — `docs/GOOGLE-DRIVE.md`); calendário unificado de prazos |
 | `/conteudo` | Calendário por rede social, quadro por etapa (ideia→publicado), pilares |
 | `/trafego` | Campanhas, métricas diárias (manual ou CSV), CPL/CTR/CPC/ROAS, meta de CPL com alerta, relatório PDF |
 | `/financeiro` | Receber/pagar, atrasos, recorrências automáticas |
 | `/planejamento` | Metas (receita, lucro, clientes, propostas, leads, posts) com projeção; **calculadora “quanto preciso faturar”**; orçamento por categoria; caixa histórico + previsão |
-| `/equipe`, `/configuracoes`, `/plano`, `/plataforma` | Convites e papéis · dados do estúdio/marca/imposto · limites · gestão de todos os estúdios (quem vende) |
+| `/equipe`, `/configuracoes`, `/plano`, `/plataforma` | Convites e papéis · dados do estúdio/marca/imposto, **upload de logotipo e avatar** · limites · gestão de todos os estúdios (quem vende) |
 
 ## 4. Automações (worker)
 `GET/POST /api/worker` (Bearer `CRON_SECRET`) → `run_scheduled_scans()`: gera recorrências, expira propostas, alerta recebimento atrasado, tarefa atrasada (ao responsável), publicação de amanhã, proposta parada 5+ dias, lead sem contato 3+ dias, contrato sem assinatura, campanha sem métricas, **CPL acima da meta**, fim do teste. Idempotente (`dedupe_key`).

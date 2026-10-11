@@ -259,3 +259,22 @@ update public.workspaces set trial_ends_at = now() - interval '1 day' where id =
 select t.login('00000000-0000-0000-0000-00000000000b'); set role authenticated;
 select t.raises(format($$insert into storage.objects (bucket_id, name) values ('branding', 'ws/%s/logo-3.png')$$, t.get('wsB')), '42501');   -- assinatura vencida
 reset role;
+
+-- ===== anexos de tarefas =====
+select t.login('00000000-0000-0000-0000-00000000000a'); set role authenticated;
+select t.put('taskA', (select id::text from public.tasks where workspace_id = t.get('wsA')::uuid limit 1));
+insert into public.task_attachments (workspace_id, task_id, kind, provider, name, url) values (t.get('wsA')::uuid, t.get('taskA')::uuid, 'link', 'google_drive', 'Briefing', 'https://drive.google.com/file/d/abc/view');
+insert into public.task_attachments (workspace_id, task_id, kind, name, path, mime, size_bytes) values (t.get('wsA')::uuid, t.get('taskA')::uuid, 'arquivo', 'logo.pdf', 'ws/' || t.get('wsA') || '/tasks/' || t.get('taskA') || '/x-logo.pdf', 'application/pdf', 1234);
+select t.raises(format($$insert into public.task_attachments (workspace_id, task_id, kind, name, url) values (%L, %L, 'link', 'x', 'javascript:alert(1)')$$, t.get('wsA'), t.get('taskA')), '23514');   -- só http(s)
+select t.raises(format($$insert into public.task_attachments (workspace_id, task_id, kind, name, path) values (%L, %L, 'arquivo', 'x', 'ws/outro/tasks/x/y.pdf')$$, t.get('wsA'), t.get('taskA')), '23514');   -- caminho precisa ser da tarefa
+insert into storage.objects (bucket_id, name) values ('attachments', 'ws/' || t.get('wsA') || '/tasks/' || t.get('taskA') || '/x-logo.pdf');
+select t.raises(format($$insert into storage.objects (bucket_id, name) values ('attachments', 'ws/%s/tasks/%s/y.pdf')$$, t.get('wsB'), t.get('taskA')), '42501');
+reset role;
+select t.login('00000000-0000-0000-0000-00000000000c'); set role authenticated;   -- membro lê e anexa
+select t.ok((select count(*) from public.task_attachments) = 2, 'membro enxerga anexos do estúdio');
+insert into storage.objects (bucket_id, name) values ('attachments', 'ws/' || t.get('wsA') || '/tasks/' || t.get('taskA') || '/m.pdf');
+reset role;
+select t.login('00000000-0000-0000-0000-00000000000b'); set role authenticated;   -- outro tenant não enxerga
+select t.ok((select count(*) from public.task_attachments) = 0, 'outro tenant não enxerga anexos');
+select t.ok((select count(*) from storage.objects where bucket_id = 'attachments') = 0, 'outro tenant não enxerga arquivos');
+reset role;
