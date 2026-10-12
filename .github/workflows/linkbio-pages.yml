@@ -2,7 +2,7 @@ name: Publicar link da bio
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/intelligent-johnson-pkg8sd]
     paths: ["linkbio/**", ".github/workflows/linkbio-pages.yml"]
   workflow_dispatch:
 
