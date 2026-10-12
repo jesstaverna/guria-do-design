@@ -22,6 +22,8 @@ const config: Config = {
       // Tipografia da marca (Tusker / Standert) é licenciada: adicione @font-face em globals.css e coloque aqui.
       fontFamily: { sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', '"Helvetica Neue"', 'Arial', 'sans-serif'] },
       borderRadius: { xl: '14px', '2xl': '20px' },
+      keyframes: { float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }, glow: { '0%,100%': { opacity: '.35' }, '50%': { opacity: '.6' } } },
+      animation: { float: 'float 7s ease-in-out infinite', glow: 'glow 6s ease-in-out infinite' },
     },
   },
   plugins: [],
