@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BarChart3, CalendarDays, CheckSquare, Clock, FileSignature, FileText, FolderKanban, Megaphone, MessageCircle, Palette, Receipt, Shield, StickyNote, Table2, Target, Users, Wallet, Workflow, type LucideIcon } from 'lucide-react';
+import { Instagram, Globe, Mail, BarChart3, CalendarDays, CheckSquare, Clock, FileSignature, FileText, FolderKanban, Megaphone, MessageCircle, Palette, Receipt, Shield, StickyNote, Table2, Target, Users, Wallet, Workflow, type LucideIcon } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { APP_DESCRIPTION, APP_NAME } from '@/lib/brand';
@@ -8,9 +8,16 @@ import { Reveal } from '@/components/landing/Reveal';
 import { CalendarMock, DashboardMock, FinanceMock, KanbanMock, ProposalMock } from '@/components/landing/Mocks';
 
 // Valores iguais aos da tabela `plans` (migration 0001). Ao mudar preço lá, mude aqui.
+// Dados da seção "quem criou". Confirme/ajuste os links das redes aqui.
+const FOUNDER = {
+  name: 'Guria do Design', role: 'Designer e criadora do OrbiaHUB',
+  bio: ['Sou designer e vivo de design: atendo clientes, vendo projetos, planejo conteúdo e corro atrás de prazo e cobrança, como você.', 'Criei o OrbiaHUB porque cansei de espalhar a operação do estúdio entre planilhas, WhatsApp e dez abas. Ele nasceu da minha rotina real e é construído para quem vende serviço de design.'],
+  socials: [{ label: 'Instagram', href: 'https://instagram.com/guriadodesign', Icon: Instagram }, { label: 'Site', href: 'https://guriadodesign.com.br', Icon: Globe }, { label: 'E-mail', href: 'mailto:contato@guriadodesign.com.br', Icon: Mail }],
+};
+
 const PLANS = [
-  { name: 'Essencial', price: 67, desc: 'Para o freelancer que quer operar como estúdio.', lead: 'Até 3 clientes · 1 usuário', items: ['Painel completo', 'CRM e funil de vendas', 'Propostas e contratos', 'Projetos e tarefas', 'Planejamento de conteúdo', 'Financeiro e metas', 'Sua logo e cor da marca'], hl: false, cta: 'Testar Essencial' },
-  { name: 'Pro', price: 127, desc: 'Para quem tem equipe e cresce sem perder o controle.', lead: 'Até 10 clientes · 5 usuários', items: ['Tudo do Essencial', 'Equipe e permissões por função', 'Tráfego pago por cliente', 'Calendário e Kanban de produção', 'Anexos e Google Drive'], hl: true, cta: 'Testar Pro' },
+  { name: 'Essencial', price: 67, desc: 'Para o freelancer que quer operar como estúdio.', lead: 'Até 3 clientes · 1 usuário', items: ['Painel completo', 'CRM e funil de vendas', 'Propostas e contratos', 'Projetos e tarefas', 'Planejamento de conteúdo', 'Financeiro e metas', 'Tráfego pago', 'Sua logo e cor da marca'], hl: false, cta: 'Testar Essencial' },
+  { name: 'Pro', price: 127, desc: 'Para quem tem equipe e cresce sem perder o controle.', lead: 'Até 10 clientes · 5 usuários', items: ['Tudo do Essencial', 'Equipe e permissões por função', 'Convite de colegas por e-mail', 'Mais clientes e projetos em paralelo'], hl: true, cta: 'Testar Pro' },
   { name: 'Premium', price: 197, desc: 'Para agências que não querem limites.', lead: 'Clientes e usuários ilimitados', items: ['Tudo do Pro', 'Suporte prioritário'], hl: false, cta: 'Testar Premium' },
 ];
 
@@ -153,6 +160,26 @@ export default async function Home() {
           {STEPS.map(([t, d], i) => <Reveal key={t} delay={i * 90}><div className="rounded-2xl border border-white/10 bg-white/[.03] p-6"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#7C5CFF] text-sm font-bold">{i + 1}</span><h3 className="mt-4 font-semibold">{t}</h3><p className="mt-2 text-sm text-white/55">{d}</p></div></Reveal>)}
         </div>
       </Section>
+
+      {/* QUEM CRIOU */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid items-center gap-10 md:grid-cols-5">
+          <Reveal className="md:col-span-2">
+            <div className="relative mx-auto max-w-xs">
+              <div className="absolute -inset-3 rounded-[2rem] bg-gradient-to-br from-[#7C5CFF]/40 to-transparent blur-2xl" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/fundadora.webp" alt={FOUNDER.name} width={900} height={1157} loading="lazy" className="relative w-full rounded-3xl border border-white/10 object-cover" />
+            </div>
+          </Reveal>
+          <Reveal delay={120} className="md:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-[.2em] text-[#A78BFF]">Quem criou</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Criado por quem vive de design.</h2>
+            <div className="mt-5 space-y-3 text-white/65">{FOUNDER.bio.map((t) => <p key={t}>{t}</p>)}</div>
+            <p className="mt-6 font-semibold">{FOUNDER.name}</p><p className="text-sm text-white/50">{FOUNDER.role}</p>
+            <div className="mt-4 flex flex-wrap gap-2">{FOUNDER.socials.map(({ label, href, Icon }) => <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/75 transition hover:border-[#7C5CFF]/60 hover:text-white"><Icon className="h-4 w-4" strokeWidth={1.6} />{label}</a>)}</div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* PLANOS */}
       <Section center id="planos" kicker="Planos" title="Preço simples, mensal e sem fidelidade.">
