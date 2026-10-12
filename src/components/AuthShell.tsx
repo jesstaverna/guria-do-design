@@ -1,16 +1,17 @@
 import { Suspense, type ReactNode } from 'react';
 import { Flash } from '@/components/Flash';
-import { APP_NAME, APP_TAGLINE } from '@/lib/brand';
+import { Logo } from '@/components/Logo';
+import { APP_DESCRIPTION } from '@/lib/brand';
 
 export function AuthShell({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
       <Suspense><Flash /></Suspense>
-      <section className="hidden flex-col justify-between bg-[#101010] p-12 text-[#f7f6f4] lg:flex">
-        <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-lg bg-accent text-lg font-bold text-white">G</span><span className="text-lg font-semibold tracking-wide">{APP_NAME}</span></div>
+      <section className="hidden flex-col justify-between bg-[#0B0B0F] p-12 text-[#FAFAFD] lg:flex">
+        <Logo size={40} light />
         <div>
-          <p className="max-w-md text-4xl font-semibold leading-tight tracking-tight">CRM, propostas, contratos, conteúdo, tráfego e financeiro num só lugar.</p>
-          <p className="mt-4 text-sm text-white/50">{APP_TAGLINE}</p>
+          <p className="max-w-md text-4xl font-semibold leading-tight tracking-tight">Sua agência inteira. <span className="text-accent">Um só lugar.</span></p>
+          <p className="mt-4 max-w-md text-sm text-white/55">{APP_DESCRIPTION}</p>
         </div>
         <span className="h-1.5 w-24 rounded-full bg-gradient-to-r from-accent to-violet-brand" />
       </section>

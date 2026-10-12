@@ -157,7 +157,7 @@ export const PRIORITY: Record<string, { label: string; tone: string }> = {
   alta: { label: 'Alta', tone: 'bg-amber-500/15 text-warn' }, urgente: { label: 'Urgente', tone: 'bg-danger/10 text-danger' },
 };
 export const NETWORKS: Record<string, { label: string; color: string }> = {
-  instagram: { label: 'Instagram', color: '#dd00dd' }, tiktok: { label: 'TikTok', color: '#25d5c8' }, linkedin: { label: 'LinkedIn', color: '#0a66c2' },
+  instagram: { label: 'Instagram', color: '#e1306c' }, tiktok: { label: 'TikTok', color: '#25d5c8' }, linkedin: { label: 'LinkedIn', color: '#0a66c2' },
   youtube: { label: 'YouTube', color: '#e02b20' }, pinterest: { label: 'Pinterest', color: '#e60023' }, facebook: { label: 'Facebook', color: '#1877f2' },
   x: { label: 'X / Twitter', color: '#888888' }, threads: { label: 'Threads', color: '#7327ea' }, blog: { label: 'Blog', color: '#f59e0b' },
 };

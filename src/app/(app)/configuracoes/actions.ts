@@ -10,7 +10,7 @@ export async function saveWorkspace(fd: FormData) {
   const { supabase, ws } = await requireWritable('configuracoes');
   const name = str(fd, 'name');
   if (name.length < 2) flash(BACK, 'err', 'Informe o nome do estúdio.');
-  const color = str(fd, 'brand_color') || '#dd00dd';
+  const color = str(fd, 'brand_color') || '#7C5CFF';
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) flash(BACK, 'err', 'Cor inválida (use #RRGGBB).');
   const tax = Number(str(fd, 'tax_rate_pct').replace(',', '.') || 0);
   if (!(tax >= 0 && tax <= 100)) flash(BACK, 'err', 'Imposto deve estar entre 0 e 100%.');

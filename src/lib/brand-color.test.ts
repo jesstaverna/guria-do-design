@@ -19,7 +19,7 @@ describe('cor da marca', () => {
     expect(brandVars('#7327ea')['--accent-ink']).toBe('115 39 234');
   });
   it('sem cor válida usa o padrão do produto', () => {
-    expect(brandVars(null)['--accent']).toBe('221 0 221');
-    expect(brandVars('xyz')['--accent']).toBe('221 0 221');
+    expect(brandVars(null)['--accent']).toBe('124 92 255');
+    expect(brandVars('xyz')['--accent']).toBe('124 92 255');
   });
 });

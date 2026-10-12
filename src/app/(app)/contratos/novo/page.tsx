@@ -22,7 +22,7 @@ export default async function NovoContrato({ searchParams }: { searchParams: Pro
       <PageHeader title="Novo contrato" subtitle="O texto é gerado com os dados do estúdio, do cliente e da proposta. Você revisa e edita antes de enviar." />
       <form action={createContract} className="card grid gap-4 sm:grid-cols-2">
         <Field label="Modelo *"><select name="template" required className="input">
-          <optgroup label="Modelos Guria OS">{BUILTIN_TEMPLATES.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
+          <optgroup label="Modelos OrbiaHUB">{BUILTIN_TEMPLATES.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
           {!!custom?.length && <optgroup label="Meus modelos">{custom.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>}
         </select></Field>
         <Field label="Título"><input name="title" className="input" placeholder="Ex.: Contrato — Identidade visual" /></Field>

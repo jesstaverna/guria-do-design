@@ -22,7 +22,7 @@ const WHITE: RGB = [255, 255, 255], BLACK: RGB = [16, 16, 16];
  * --on-accent: texto sobre a cor (branco ou quase preto, o de maior contraste) · --accent-dark: hover · --accent-ink: versão legível como TEXTO sobre fundo claro.
  */
 export function brandVars(hex: string | null | undefined): Record<string, string> {
-  const c = parseHex(hex ?? '') ?? [221, 0, 221];
+  const c = parseHex(hex ?? '') ?? [124, 92, 255];
   const ink = contrast(c, WHITE) >= 4.5 ? c : (() => { let x = c; for (let i = 0; i < 12 && contrast(x, WHITE) < 4.5; i++) x = mix(x, BLACK, 0.15); return x; })();
   return {
     '--accent': triplet(c), '--accent-dark': triplet(mix(c, BLACK, 0.18)),

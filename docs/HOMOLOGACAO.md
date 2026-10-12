@@ -1,9 +1,9 @@
 # Guia de homologação (passo a passo)
 
-Objetivo: colocar o Guria OS no ar num ambiente de teste real e validar o que os testes automáticos não cobrem (Auth real, e-mail, cron).
+Objetivo: colocar o OrbiaHUB no ar num ambiente de teste real e validar o que os testes automáticos não cobrem (Auth real, e-mail, cron).
 
 ## 1. Supabase (≈10 min)
-1. Crie um projeto em supabase.com (nome: `guria-os-homolog`). Guarde a senha do banco.
+1. Crie um projeto em supabase.com (nome: `orbiahub-homolog`). Guarde a senha do banco.
 2. **SQL Editor**: cole e execute, **em ordem**, os 5 arquivos de `supabase/migrations/` (`...0001` até `...0005`). Cada um deve terminar sem erro.
 3. **Authentication → Providers → Email**: deixe *Confirm email* **ligado**.
 4. **Authentication → URL Configuration**: *Site URL* = a URL do app (passo 2); adicione `URL/login` em *Redirect URLs*.
@@ -71,7 +71,7 @@ Para cada problema: tela, o que esperava, o que aconteceu (print ajuda). Traga a
 
 ## Notas sobre a Vercel (aprendido na primeira publicação)
 - Em Settings → Build and Deployment, **Framework Preset = Next.js** (senão: "No entrypoint found").
-- Use um **projeto Vercel só do Guria OS**. Não reaproveite um projeto que já publique outra coisa (a página inicial dá 404).
+- Use um **projeto Vercel só do OrbiaHUB**. Não reaproveite um projeto que já publique outra coisa (a página inicial dá 404).
 - Cadastre as variáveis em **Production e Preview**; variáveis só em Production não chegam nos deploys de branch.
 - Plano Hobby: cron só 1x/dia (já configurado em `vercel.json`) e uso não comercial; para vender, use o plano Pro.
 - Variáveis `NEXT_PUBLIC_*` não podem ser marcadas como *Sensitive*.

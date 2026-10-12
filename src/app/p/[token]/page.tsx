@@ -50,7 +50,7 @@ export default async function PublicProposal({ params, searchParams }: { params:
   if (!data) return <Shell><h1 className="text-2xl font-semibold">Proposta não encontrada</h1><p className="mt-2 text-white/60">O link pode estar incorreto ou a proposta ainda não foi liberada.</p></Shell>;
   const p = data as ProposalViewData & { status: string; accepted_at: string | null; accepted_by_name: string | null };
   const open = ['enviada', 'visualizada', 'em_negociacao'].includes(p.status);
-  const color = p.brand.color ?? '#dd00dd';
+  const color = p.brand.color ?? '#7C5CFF';
 
   return (
     <div className="min-h-screen bg-[#ecebe7] py-6">

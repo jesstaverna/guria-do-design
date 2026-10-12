@@ -8,7 +8,7 @@
 ## Seletor oficial do Google Drive (opcional)
 Mostra o botão **Escolher no Google Drive**; o arquivo escolhido vira um *link* anexado (nada é copiado). Escopo mínimo: `drive.file` (o app só enxerga o que a pessoa escolhe). **Não foi testado nesta entrega** (precisa de credenciais Google): teste em homologação.
 
-1. Acesse console.cloud.google.com e crie um projeto (ex.: `guria-os`).
+1. Acesse console.cloud.google.com e crie um projeto (ex.: `orbiahub`).
 2. **APIs e serviços → Biblioteca**: ative **Google Picker API** e **Google Drive API**.
 3. **Tela de permissão OAuth**: tipo *Externo*, nome do app, e-mail de suporte; adicione o escopo `.../auth/drive.file`. Em teste, adicione seus e-mails como *usuários de teste*; para liberar a todos, **publique o app** (o escopo `drive.file` normalmente não exige verificação completa).
 4. **Credenciais → Criar credenciais → ID do cliente OAuth** (aplicativo da Web). Em *Origens JavaScript autorizadas* coloque a URL do app (e `http://localhost:3000` para testes).

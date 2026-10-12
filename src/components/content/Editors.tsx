@@ -71,7 +71,7 @@ export function ManyChatEditor({ initial, save, disabled }: { initial: ManyChat 
   return (
     <fieldset disabled={disabled} onBlur={flush} className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2 text-xs"><span className="badge border-transparent bg-warn/15 text-warn">Rascunho · desativado</span><span className="text-muted">Nenhuma automação é criada ou disparada pelo Guria OS. Copie e configure no ManyChat você mesma.</span></div>
+        <div className="flex flex-wrap items-center gap-2 text-xs"><span className="badge border-transparent bg-warn/15 text-warn">Rascunho · desativado</span><span className="text-muted">Nenhuma automação é criada ou disparada pelo OrbiaHUB. Copie e configure no ManyChat você mesma.</span></div>
         <div className="flex items-center gap-2"><Status text={status} error={error} /><CopyButton text={manychatText(m)} label="Copiar tudo" /></div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">

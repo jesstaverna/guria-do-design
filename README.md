@@ -1,4 +1,4 @@
-# GURIA OS
+# OrbiaHUB — Sua agência inteira. Um só lugar.
 
 Sistema de gestão para **designers e estúdios** (multiusuário / SaaS): CRM, propostas com link e aceite, gerador de contratos, projetos e tarefas, agenda de prazos, planejamento de conteúdo por rede social, tráfego pago, financeiro, metas e orçamento. Next.js 15 + Supabase (PostgreSQL com RLS). Cada designer tem o seu **espaço (workspace)**, isolado por RLS.
 

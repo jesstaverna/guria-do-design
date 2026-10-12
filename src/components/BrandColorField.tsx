@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { brandVars } from '@/lib/brand-color';
 
-const PRESETS = ['#dd00dd', '#7327ea', '#2563eb', '#0d9488', '#16a34a', '#f59e0b', '#ef4444', '#111111'];
+const PRESETS = ['#7c5cff', '#b00bb5', '#2563eb', '#0d9488', '#16a34a', '#f59e0b', '#ef4444', '#111111'];
 
 /** Seletor da cor da marca com prévia ao vivo (botão, etiqueta e barra) usando as mesmas variáveis do tema. */
 export function BrandColorField({ defaultValue }: { defaultValue: string }) {

@@ -1,4 +1,4 @@
--- GURIA OS: instalação completa do banco (cole tudo no SQL Editor do Supabase e clique em Run).
+-- ORBIAHUB: instalação completa do banco (cole tudo no SQL Editor do Supabase e clique em Run).
 -- Gerado a partir de supabase/migrations/*.sql, na ordem. Se você já instalou antes, rode só os arquivos novos em supabase/migrations/.
 
 -- ======== 20261010000001_foundation.sql ========
@@ -1682,3 +1682,8 @@ end $$;
 revoke execute on function public.content_import_preview(uuid, jsonb, text), public.content_import_apply(uuid), public.content_import_discard(uuid) from public, anon;
 grant execute on function public.content_import_preview(uuid, jsonb, text), public.content_import_apply(uuid), public.content_import_discard(uuid) to authenticated;
 revoke execute on function app.content_import(uuid, jsonb, boolean) from public, anon, authenticated;
+
+-- ======== 20261013000009_orbiahub_brand_default.sql ========
+-- OrbiaHUB — nova cor padrão da marca (lilás #7C5CFF). Só afeta estúdios novos e quem nunca trocou a cor padrão antiga (#dd00dd).
+alter table public.workspaces alter column brand_color set default '#7C5CFF';
+update public.workspaces set brand_color = '#7C5CFF' where lower(brand_color) = '#dd00dd';

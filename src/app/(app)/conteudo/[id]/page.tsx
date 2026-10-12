@@ -52,7 +52,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label="Seções do conteúdo">
         {TABS.map(([k, l]) => <Link key={k} href={`/conteudo/${id}?tab=${k}`} role="tab" aria-selected={tab === k} className={`whitespace-nowrap px-3.5 py-2.5 text-sm ${tab === k ? 'border-b-2 border-accent font-medium' : 'text-muted hover:text-fg'}`}>{l}{k === 'anexos' && atts?.length ? ` (${atts.length})` : ''}</Link>)}
       </div>
-      {p.review_required && p.status !== 'publicado' && <p className="mb-4 rounded-xl bg-amber-500/10 p-3 text-xs text-warn">Revisão humana necessária antes de publicar (texto, imagem e promessas). O Guria OS não publica nem agenda nada sozinho.</p>}
+      {p.review_required && p.status !== 'publicado' && <p className="mb-4 rounded-xl bg-amber-500/10 p-3 text-xs text-warn">Revisão humana necessária antes de publicar (texto, imagem e promessas). O OrbiaHUB não publica nem agenda nada sozinho.</p>}
 
       {tab === 'visao' && (
         <div className="grid gap-6 xl:grid-cols-3">
@@ -69,7 +69,7 @@ export default async function PostPage({ params, searchParams }: { params: Promi
               <AutoField field="pillar_id" label="Pilar (um por conteúdo)" kind="select" initial={p.pillar_id ?? ''} save={save} disabled={dis} options={[{ value: '', label: '— sem pilar —' }, ...pillars.map((x) => ({ value: x.id, label: x.name }))]} />
               <AutoField field="assignee_id" label="Responsável" kind="select" initial={p.assignee_id ?? ''} save={save} disabled={dis} options={[{ value: '', label: '— ninguém —' }, ...members.map((m) => ({ value: m.id, label: m.name }))]} />
               <AutoField field="publish_date" label="Data editorial (planejamento)" kind="date" initial={p.publish_date} save={save} disabled={dis} hint="Não significa agendado no Instagram." />
-              <AutoField field="platform_scheduled_at" label="Agendado na plataforma em" kind="datetime" initial={p.platform_scheduled_at} save={save} disabled={dis} hint="Só se VOCÊ agendar fora do Guria OS." />
+              <AutoField field="platform_scheduled_at" label="Agendado na plataforma em" kind="datetime" initial={p.platform_scheduled_at} save={save} disabled={dis} hint="Só se VOCÊ agendar fora do OrbiaHUB." />
             </div>
             <div><div className="label">Campanhas (tags)</div><CampaignPicker postId={id} campaigns={campaigns} selected={links.get(id) ?? []} disabled={dis} /></div>
             <AutoField field="internal_notes" label="Observações internas" kind="textarea" rows={3} initial={p.internal_notes} save={save} disabled={dis} />

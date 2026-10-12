@@ -20,7 +20,7 @@ function Block({ title, text, color }: { title: string; text: string | null; col
 
 /** Documento da proposta (fundo claro, bom para tela e PDF por impressão). Usado na prévia interna e no link público. */
 export function ProposalView({ p }: { p: ProposalViewData }) {
-  const color = p.brand.color && /^#[0-9a-f]{6}$/i.test(p.brand.color) ? p.brand.color : '#dd00dd';
+  const color = p.brand.color && /^#[0-9a-f]{6}$/i.test(p.brand.color) ? p.brand.color : '#7C5CFF';
   return (
     <article className="print-doc mx-auto max-w-4xl bg-white px-6 py-10 text-[#101010] shadow-sm sm:px-14 sm:py-16" style={{ colorScheme: 'light' }}>
       <header className="border-b-4 pb-10" style={{ borderColor: color }}>

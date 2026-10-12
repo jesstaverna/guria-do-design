@@ -34,7 +34,7 @@ export default async function PublicContract({ params, searchParams }: { params:
   const { data } = await createAnonClient().rpc('contract_public_open', { p_token: token });
   if (!data) return shell('Contrato não encontrado', 'O link pode estar incorreto ou o contrato ainda não foi liberado.');
   const c = data as { title: string; body: string; status: string; signed_at: string | null; signed_name: string | null; body_hash: string | null; brand: { name: string; color: string | null } };
-  const color = c.brand.color ?? '#dd00dd';
+  const color = c.brand.color ?? '#7C5CFF';
   return (
     <div className="min-h-screen bg-[#ecebe7] py-6">
       <article className="print-doc mx-auto max-w-3xl bg-white px-6 py-10 text-[#101010] shadow-sm sm:px-14 sm:py-14" style={{ colorScheme: 'light' }}>
