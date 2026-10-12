@@ -9,8 +9,9 @@ import { CalendarMock, DashboardMock, FinanceMock, KanbanMock, ProposalMock } fr
 
 // Valores iguais aos da tabela `plans` (migration 0001). Ao mudar preço lá, mude aqui.
 const PLANS = [
-  { name: 'Solo', price: 49, desc: 'Para o freelancer que quer parecer (e operar) como estúdio.', items: ['1 usuário', 'Até 30 clientes', 'CRM, propostas e contratos', 'Projetos, tarefas e conteúdo', 'Financeiro e metas', 'Sua logo e cor da marca'], hl: false },
-  { name: 'Estúdio', price: 99, desc: 'Para quem tem equipe e cresce sem perder o controle.', items: ['Até 5 usuários', 'Clientes ilimitados', 'Tudo do Solo', 'Tráfego pago por cliente', 'Permissões por função', 'Prioridade no suporte'], hl: true },
+  { name: 'Essencial', price: 67, desc: 'Para o freelancer que quer operar como estúdio.', lead: 'Até 3 clientes · 1 usuário', items: ['Painel completo', 'CRM e funil de vendas', 'Propostas e contratos', 'Projetos e tarefas', 'Planejamento de conteúdo', 'Financeiro e metas', 'Sua logo e cor da marca'], hl: false, cta: 'Testar Essencial' },
+  { name: 'Pro', price: 127, desc: 'Para quem tem equipe e cresce sem perder o controle.', lead: 'Até 10 clientes · 5 usuários', items: ['Tudo do Essencial', 'Equipe e permissões por função', 'Tráfego pago por cliente', 'Calendário e Kanban de produção', 'Anexos e Google Drive'], hl: true, cta: 'Testar Pro' },
+  { name: 'Premium', price: 197, desc: 'Para agências que não querem limites.', lead: 'Clientes e usuários ilimitados', items: ['Tudo do Pro', 'Suporte prioritário'], hl: false, cta: 'Testar Premium' },
 ];
 
 const AUDIENCE: [LucideIcon, string, string][] = [
@@ -56,9 +57,9 @@ const FAQ = [
   ['Funciona no celular?', 'Sim. O sistema é responsivo e funciona no navegador do celular, tablet e computador.'],
 ];
 
-const Section = ({ id, kicker, title, children }: { id?: string; kicker: string; title: string; children: React.ReactNode }) => (
+const Section = ({ id, kicker, title, center = false, children }: { id?: string; kicker: string; title: string; center?: boolean; children: React.ReactNode }) => (
   <section id={id} className="mx-auto max-w-6xl scroll-mt-20 px-6 py-20">
-    <Reveal><p className="text-xs font-semibold uppercase tracking-[.2em] text-[#A78BFF]">{kicker}</p><h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2></Reveal>
+    <Reveal className={center ? 'text-center' : ''}><p className="text-xs font-semibold uppercase tracking-[.2em] text-[#A78BFF]">{kicker}</p><h2 className={`mt-3 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl ${center ? 'mx-auto' : ''}`}>{title}</h2></Reveal>
     <div className="mt-10">{children}</div>
   </section>
 );
@@ -93,7 +94,7 @@ export default async function Home() {
       {/* PROVA / NÚMEROS */}
       <section className="border-y border-white/5">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-6 py-8 text-center sm:grid-cols-4">
-          {[['8', 'módulos num só sistema'], ['14 dias', 'de teste grátis'], ['100%', 'com a sua marca'], ['R$ 49', 'a partir de, por mês']].map(([n, l]) => <Reveal key={l}><div className="text-2xl font-bold text-[#A78BFF]">{n}</div><div className="mt-1 text-xs text-white/50">{l}</div></Reveal>)}
+          {[['8', 'módulos num só sistema'], ['14 dias', 'de teste grátis'], ['100%', 'com a sua marca'], ['R$ 67', 'a partir de, por mês']].map(([n, l]) => <Reveal key={l}><div className="text-2xl font-bold text-[#A78BFF]">{n}</div><div className="mt-1 text-xs text-white/50">{l}</div></Reveal>)}
         </div>
       </section>
 
@@ -116,7 +117,7 @@ export default async function Home() {
       </Section>
 
       {/* RECURSOS COM TELAS */}
-      <Section id="recursos" kicker="Recursos" title="Do primeiro contato ao último pagamento, sem trocar de ferramenta.">
+      <Section center id="recursos" kicker="Recursos" title="Do primeiro contato ao último pagamento, sem trocar de ferramenta.">
         <div className="space-y-20">
           {[
             ['CRM e funil de vendas', 'Arraste leads entre etapas, registre contatos e receba alertas de follow-up. Nada de oportunidade esquecida.', <KanbanMock key="k" />],
@@ -142,28 +143,28 @@ export default async function Home() {
         <div className="mx-auto max-w-6xl px-6 py-16 text-center">
           <Reveal><h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Menos abas abertas. <span className="text-[#A78BFF]">Mais estúdio.</span></h2><p className="mx-auto mt-3 max-w-xl text-white/55">O {APP_NAME} reúne no mesmo lugar o que hoje você faz em várias ferramentas.</p></Reveal>
           <div className="mt-10 flex flex-wrap justify-center gap-3">{REPLACES.map(([Ic, t], i) => <Reveal key={t} delay={i * 50}><span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/70"><Ic className="h-4 w-4 text-white/40" strokeWidth={1.6} /><span className="line-through decoration-white/30">{t}</span></span></Reveal>)}</div>
-          <Reveal delay={200}><div className="mx-auto mt-8 inline-flex items-center gap-3 rounded-2xl border border-[#7C5CFF]/50 bg-[#7C5CFF]/10 px-6 py-4"><Workflow className="h-5 w-5 text-[#A78BFF]" strokeWidth={1.6} /><span className="text-sm">Tudo isso no <b>{APP_NAME}</b>, a partir de <b className="text-[#A78BFF]">R$ 49/mês</b></span></div></Reveal>
+          <Reveal delay={200}><div className="mx-auto mt-8 inline-flex items-center gap-3 rounded-2xl border border-[#7C5CFF]/50 bg-[#7C5CFF]/10 px-6 py-4"><Workflow className="h-5 w-5 text-[#A78BFF]" strokeWidth={1.6} /><span className="text-sm">Tudo isso no <b>{APP_NAME}</b>, a partir de <b className="text-[#A78BFF]">R$ 67/mês</b></span></div></Reveal>
         </div>
       </section>
 
       {/* COMO FUNCIONA */}
-      <Section kicker="Como funciona" title="Comece hoje, em três passos.">
+      <Section center kicker="Como funciona" title="Comece hoje, em três passos.">
         <div className="grid gap-4 md:grid-cols-3">
           {STEPS.map(([t, d], i) => <Reveal key={t} delay={i * 90}><div className="rounded-2xl border border-white/10 bg-white/[.03] p-6"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#7C5CFF] text-sm font-bold">{i + 1}</span><h3 className="mt-4 font-semibold">{t}</h3><p className="mt-2 text-sm text-white/55">{d}</p></div></Reveal>)}
         </div>
       </Section>
 
       {/* PLANOS */}
-      <Section id="planos" kicker="Planos" title="Preço simples, mensal e sem fidelidade.">
-        <div className="mx-auto grid max-w-3xl gap-5 md:grid-cols-2">
+      <Section center id="planos" kicker="Planos" title="Preço simples, mensal e sem fidelidade.">
+        <div className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
           {PLANS.map((p, i) => (
             <Reveal key={p.name} delay={i * 100}>
               <div className={`relative h-full rounded-3xl border p-7 ${p.hl ? 'border-[#7C5CFF] bg-gradient-to-b from-[#7C5CFF]/15 to-transparent' : 'border-white/10 bg-white/[.03]'}`}>
-                {p.hl && <span className="absolute -top-3 left-7 rounded-full bg-[#7C5CFF] px-3 py-0.5 text-[11px] font-semibold">Mais escolhido</span>}
+                {p.hl && <span className="absolute -top-3 left-7 rounded-full bg-[#7C5CFF] px-3 py-0.5 text-[11px] font-semibold">★ Mais popular</span>}
                 <h3 className="text-lg font-semibold">{p.name}</h3><p className="mt-1 min-h-10 text-sm text-white/55">{p.desc}</p>
                 <div className="mt-5 flex items-baseline gap-1"><span className="text-sm text-white/55">R$</span><span className="text-5xl font-bold tracking-tight">{p.price}</span><span className="text-sm text-white/55">/mês</span></div>
-                <Link href="/cadastro" className={`btn mt-6 w-full !py-3 ${p.hl ? 'btn-primary' : '!border-white/15 !bg-transparent !text-white hover:!bg-white/5'}`}>Testar 14 dias grátis</Link>
-                <ul className="mt-6 space-y-2.5 text-sm text-white/75">{p.items.map((it) => <li key={it} className="flex gap-2"><Check />{it}</li>)}</ul>
+                <Link href="/cadastro" className={`btn mt-6 w-full !py-3 ${p.hl ? 'btn-primary' : '!border-white/15 !bg-transparent !text-white hover:!bg-white/5'}`}>{p.cta} · 14 dias grátis</Link>
+                <ul className="mt-6 space-y-2.5 text-sm text-white/75"><li className="flex gap-2 font-semibold text-white"><Check />{p.lead}</li>{p.items.map((it) => <li key={it} className="flex gap-2"><Check />{it}</li>)}</ul>
               </div>
             </Reveal>))}
         </div>
@@ -171,8 +172,8 @@ export default async function Home() {
       </Section>
 
       {/* FAQ */}
-      <Section id="duvidas" kicker="Dúvidas" title="Perguntas frequentes">
-        <div className="max-w-3xl space-y-3">
+      <Section center id="duvidas" kicker="Dúvidas" title="Perguntas frequentes">
+        <div className="mx-auto max-w-3xl space-y-3">
           {FAQ.map(([q, a]) => <Reveal key={q}><details className="group rounded-2xl border border-white/10 bg-white/[.03] p-5 open:border-[#7C5CFF]/40"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">{q}<span className="text-[#A78BFF] transition group-open:rotate-45">+</span></summary><p className="mt-3 text-sm text-white/60">{a}</p></details></Reveal>)}
         </div>
       </Section>

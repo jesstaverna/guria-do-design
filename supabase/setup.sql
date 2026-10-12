@@ -1687,3 +1687,12 @@ revoke execute on function app.content_import(uuid, jsonb, boolean) from public,
 -- OrbiaHUB — nova cor padrão da marca (lilás #7C5CFF). Só afeta estúdios novos e quem nunca trocou a cor padrão antiga (#dd00dd).
 alter table public.workspaces alter column brand_color set default '#7C5CFF';
 update public.workspaces set brand_color = '#7C5CFF' where lower(brand_color) = '#dd00dd';
+
+-- ======== 20261013000010_plans_three_tiers.sql ========
+-- OrbiaHUB — três planos mensais: Essencial (solo), Pro (studio) e Premium. Limites nulos = ilimitado.
+update public.plans set name = 'Essencial', price_cents = 6700,  max_members = 1,    max_clients = 3,    sort = 1 where key = 'solo';
+update public.plans set name = 'Pro',       price_cents = 12700, max_members = 5,    max_clients = 10,   sort = 2 where key = 'studio';
+insert into public.plans (key, name, price_cents, max_members, max_clients, sort) values ('premium', 'Premium', 19700, null, null, 3)
+  on conflict (key) do update set name = excluded.name, price_cents = excluded.price_cents, max_members = excluded.max_members, max_clients = excluded.max_clients, sort = excluded.sort;
+-- período de teste com tudo liberado: novos estúdios entram no Premium durante o trial
+alter table public.workspaces alter column plan set default 'premium';

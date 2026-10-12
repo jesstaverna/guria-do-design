@@ -23,7 +23,7 @@ async function update(id: string, fd: FormData) {
   const admin = await guard();
   const plan = String(fd.get('plan') ?? ''), status = String(fd.get('status') ?? '');
   const patch: Record<string, unknown> = {};
-  if (['solo', 'studio'].includes(plan)) patch.plan = plan;
+  if (['solo', 'studio', 'premium'].includes(plan)) patch.plan = plan;
   if (['trial', 'active', 'past_due', 'canceled'].includes(status)) patch.status = status;
   const extend = Number(fd.get('extend_days') ?? 0);
   if (extend > 0 && extend <= 365) patch.trial_ends_at = new Date(Date.now() + extend * 86_400_000).toISOString();

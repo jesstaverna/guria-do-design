@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { Bell } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -10,6 +9,7 @@ import { MODULES, ROLE_LABEL } from '@/lib/permissions';
 import { brandVars } from '@/lib/brand-color';
 import { Sidebar } from '@/components/Sidebar';
 import { Flash } from '@/components/Flash';
+import { Topbar } from '@/components/Topbar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 async function signOut() {
@@ -50,13 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         ) : ws.status === 'trial' && (
           <div className="bg-violet-brand px-4 py-2 text-center text-sm text-white">Teste grátis: {days > 0 ? `${days} dia${days > 1 ? 's' : ''} restante${days > 1 ? 's' : ''}` : 'último dia'}. {isAdmin && <Link href="/plano" className="font-medium underline">Escolher plano</Link>}</div>
         )}
-        <div className="flex items-center justify-end gap-2 px-6 pt-5 max-lg:hidden lg:px-10">
-          <Link href="/alertas" className="btn btn-sm relative" aria-label={`Alertas${count ? `: ${count} não lidos` : ''}`}>
-            <Bell className="h-4 w-4" strokeWidth={1.6} />
-            {!!count && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-on-accent">{count > 99 ? '99+' : count}</span>}
-          </Link>
-          <ThemeToggle />
-        </div>
+        <Topbar userName={profile.full_name || profile.email || 'Usuário'} wsName={ws.name} avatarUrl={profile.avatar_url} unread={count ?? 0} isAdmin={isAdmin} signOut={signOut} />
         <main className="mx-auto max-w-[1400px] px-4 pb-20 pt-20 sm:px-6 lg:px-10 lg:pt-6">
           <div className="mb-4 flex justify-end gap-2 lg:hidden"><Link href="/alertas" className="btn btn-sm">Alertas{count ? ` (${count})` : ''}</Link><ThemeToggle /></div>
           {children}
