@@ -1,7 +1,7 @@
 -- GURIA OS — 0007 Anexos de tarefas: arquivos (Supabase Storage, bucket privado) e links (Google Drive, Figma, etc.)
 -- Arquivos: ws/<workspace_id>/tasks/<task_id>/<uuid>-<nome>. Leitura: membros; escrita: membros com workspace aberto.
 
-create table public.task_attachments (
+create table if not exists public.task_attachments (
   id            uuid primary key default gen_random_uuid(),
   workspace_id  uuid not null references public.workspaces(id) on delete cascade,
   task_id       uuid not null,
@@ -18,7 +18,7 @@ create table public.task_attachments (
   check ((kind = 'arquivo' and path is not null) or (kind = 'link' and url ~* '^https?://')),
   check (path is null or path like 'ws/' || workspace_id::text || '/tasks/' || task_id::text || '/%')
 );
-create index task_attachments_idx on public.task_attachments (task_id, created_at);
+create index if not exists task_attachments_idx on public.task_attachments (task_id, created_at);
 select app.apply_rls('task_attachments');
 grant select, insert, update, delete on public.task_attachments to authenticated;
 grant all on public.task_attachments to service_role;
