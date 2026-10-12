@@ -61,3 +61,14 @@ Três áreas, **um único conjunto de registros** (`content_posts`): Pilares (`/
 - Regras no banco: 7 cards (ou 0), ManyChat sempre `enabled=false`, “Publicado” exige data real e confirmação, `manually_edited_at` marca edição manual.
 - Importação (`/conteudo/importar`, só admin): ensaio (dry-run, nada gravado) → relatório → aplicar. Idempotente por `external_id`/hash; registros editados à mão ou divergentes viram **conflito reportado**, nunca sobrescritos. Nada é publicado nem automatizado.
 - Para instalar: rode `supabase/migrations/20261012000008_content_planning.sql` (e 0006/0007 se ainda não rodou) no SQL Editor; depois importe o JSON pela tela.
+
+## Prospecção (migration 0011) — Comercial
+
+`/prospeccao`: encontra empresas por nicho + cidade (Google Maps / Places API), analisa a presença digital com **dados públicos** (HTTPS, celular, WhatsApp, formulário, pixel, redes, contatos publicados), calcula a **pontuação de oportunidade** (regras simples e editáveis em `src/lib/prospecting/analysis.ts`), sugere o serviço de design e permite **converter o prospecto em lead do CRM**. Também há cadastro manual.
+
+- Tabelas: `prospect_campaigns`, `prospects`, `prospect_searches` (todas com `workspace_id` + RLS; unicidade de local/e-mail/domínio **por estúdio**).
+- Busca no Google Maps usa a **chave da plataforma** (`GOOGLE_PLACES_API_KEY`, só no servidor). Cota mensal por plano em `plans.max_prospect_searches` (Essencial 5, Pro 20, Premium 60), contada em `prospect_searches`.
+- Dados do Google de prospectos não trabalhados são limpos após 30 dias (worker diário, `app.purge_prospect_snapshots`).
+- Análise de sites com proteção contra SSRF (`src/integrations/net-safe.ts`): só http(s), bloqueia IP privado, limita tempo/tamanho/redirecionamentos.
+- **Não envia mensagens** (nem e-mail nem WhatsApp). Você aborda por conta própria; o sistema só organiza e registra. Envio automático com aprovação existe no Muvens OS e fica para uma etapa futura.
+- A chamada à API real do Google **não foi testada** (sem credencial no desenvolvimento): valide em homologação e confira cotas, custos e os termos da Plataforma Google Maps e a LGPD (legítimo interesse).

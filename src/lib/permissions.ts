@@ -1,5 +1,5 @@
 export type ModuleKey =
-  | 'dashboard' | 'crm' | 'clientes' | 'propostas' | 'contratos' | 'projetos' | 'tarefas' | 'agenda' | 'conteudo' | 'trafego'
+  | 'dashboard' | 'crm' | 'prospeccao' | 'clientes' | 'propostas' | 'contratos' | 'projetos' | 'tarefas' | 'agenda' | 'conteudo' | 'trafego'
   | 'financeiro' | 'planejamento' | 'equipe' | 'configuracoes' | 'plano' | 'plataforma';
 
 export interface ModuleDef { key: ModuleKey; label: string; href: string; icon: string; group: string; adminOnly?: boolean }
@@ -8,6 +8,7 @@ export const MODULES: ModuleDef[] = [
   { key: 'dashboard', label: 'Painel', href: '/dashboard', icon: 'layout-dashboard', group: 'Visão geral' },
   { key: 'agenda', label: 'Agenda e prazos', href: '/agenda', icon: 'calendar', group: 'Visão geral' },
   { key: 'crm', label: 'CRM', href: '/crm', icon: 'kanban', group: 'Comercial' },
+  { key: 'prospeccao', label: 'Prospecção', href: '/prospeccao', icon: 'radar', group: 'Comercial' },
   { key: 'clientes', label: 'Clientes', href: '/clientes', icon: 'users', group: 'Comercial' },
   { key: 'propostas', label: 'Propostas', href: '/propostas', icon: 'file-text', group: 'Comercial' },
   { key: 'contratos', label: 'Contratos', href: '/contratos', icon: 'file-signature', group: 'Comercial' },
