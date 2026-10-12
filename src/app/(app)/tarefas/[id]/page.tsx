@@ -9,7 +9,7 @@ import { DriveLinkForm } from '@/components/DriveLinkForm';
 import { PRIORITY, TASK_STATUS } from '@/lib/domain';
 import { formatBytes } from '@/lib/attachments';
 import { dateTimeBR } from '@/lib/format';
-import { addLink, deleteTask, removeAttachment, updateTask } from '../actions';
+import { addLink, deleteTask, prepareUpload, registerAttachment, removeAttachment, updateTask } from '../actions';
 
 export const metadata = { title: 'Tarefa' };
 
@@ -48,7 +48,7 @@ export default async function TarefaPage({ params }: { params: Promise<{ id: str
             )}
             {open && (
               <div className="mt-5 space-y-5 border-t border-line pt-5">
-                <AttachmentUploader taskId={id} />
+                <AttachmentUploader taskId={id} prepare={prepareUpload} register={registerAttachment} />
                 <DriveLinkForm action={addLink.bind(null, id)} />
                 <p className="text-xs text-muted">Links do Google Drive abrem para quem tem permissão no arquivo: compartilhe o arquivo com quem precisa.</p>
               </div>

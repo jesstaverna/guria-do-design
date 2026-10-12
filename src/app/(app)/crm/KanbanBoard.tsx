@@ -35,7 +35,7 @@ export function KanbanBoard({ stages, leads, canEdit }: { stages: KStage[]; lead
   return (
     <div>
       {error && <p role="alert" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">{error}</p>}
-      <div className={`flex gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-70' : ''}`}>
+      <div className={`relative flex gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-70' : ''}`}>
         {stages.map((s) => {
           const items = leads.filter((l) => l.stage_id === s.id);
           const total = items.reduce((a, l) => a + Number(l.potential_value_cents), 0);

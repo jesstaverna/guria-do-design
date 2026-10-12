@@ -2,11 +2,13 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
-import { prepareUpload, registerAttachment } from '@/app/(app)/tarefas/actions';
 import { MAX_ATTACHMENT_BYTES } from '@/lib/attachments';
 
-/** Envio direto do navegador para o Supabase Storage (URL assinada), com suporte a vários arquivos e até 25 MB cada. */
-export function AttachmentUploader({ taskId }: { taskId: string }) {
+/** Serve para tarefas e conteúdos: recebe as ações (servidor) de preparar e registrar. Envio direto do navegador para o Supabase Storage (URL assinada), com suporte a vários arquivos e até 25 MB cada. */
+type Prepare = (ownerId: string, fileName: string, size: number) => Promise<{ path: string; token: string } | { error: string }>;
+type Register = (ownerId: string, path: string, name: string, size: number, mime: string) => Promise<{ ok: true } | { error: string }>;
+
+export function AttachmentUploader({ taskId, prepare, register }: { taskId: string; prepare: Prepare; register: Register }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -19,11 +21,11 @@ export function AttachmentUploader({ taskId }: { taskId: string }) {
     let sent = 0;
     for (const file of Array.from(files)) {
       if (file.size > MAX_ATTACHMENT_BYTES) { setMsg({ kind: 'err', text: `${file.name}: passa de 25 MB.` }); continue; }
-      const prep = await prepareUpload(taskId, file.name, file.size);
+      const prep = await prepare(taskId, file.name, file.size);
       if ('error' in prep) { setMsg({ kind: 'err', text: `${file.name}: ${prep.error}` }); continue; }
       const { error } = await supabase.storage.from('attachments').uploadToSignedUrl(prep.path, prep.token, file, { contentType: file.type || 'application/octet-stream' });
       if (error) { setMsg({ kind: 'err', text: `${file.name}: falha no envio (${error.message}).` }); continue; }
-      const reg = await registerAttachment(taskId, prep.path, file.name, file.size, file.type);
+      const reg = await register(taskId, prep.path, file.name, file.size, file.type);
       if ('error' in reg) { setMsg({ kind: 'err', text: `${file.name}: ${reg.error}` }); continue; }
       sent++;
     }

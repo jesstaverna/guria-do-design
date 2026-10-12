@@ -1,104 +1,59 @@
 import Link from 'next/link';
 import { requireWorkspace } from '@/lib/session';
-import { Badge, Empty, Field, MonthNav, PageHeader, Section, Tabs } from '@/components/ui';
-import { SubmitButton } from '@/components/SubmitButton';
-import { AutoSelect } from '@/components/AutoSelect';
-import { FORMATS, MONTHS_PT, NETWORKS, POST_STATUS, monthGrid, pad2, todayBR } from '@/lib/domain';
-import { dateBR } from '@/lib/format';
-import { createPillar, deletePillar, setPostStatus } from './actions';
+import { loadContent } from '@/lib/content-data';
+import { Empty, PageHeader, Section, Stat } from '@/components/ui';
+import { ProgressBar } from '@/components/Charts';
+import { STAGES, contentStats } from '@/lib/content';
+import { MONTHS_PT, addDays, todayBR } from '@/lib/domain';
+import { dateBR, dateTimeBR, num, pct } from '@/lib/format';
 
-export const metadata = { title: 'Conteúdo' };
+export const metadata = { title: 'Planejamento de conteúdo' };
 
-export default async function Conteudo({ searchParams }: { searchParams: Promise<{ view?: string; m?: string; network?: string; client?: string }> }) {
+const KIND: Record<string, string> = { criado: 'Criado', importado: 'Importado', status: 'Mudou de etapa', reagendado: 'Reagendado', editado: 'Editado', publicado: 'Publicado' };
+
+export default async function ConteudoOverview() {
   const { supabase, ws, open } = await requireWorkspace('conteudo');
-  const sp = await searchParams;
-  const view = ['calendario', 'quadro', 'pilares'].includes(sp.view ?? '') ? sp.view! : 'calendario';
+  const { posts, pillars, campaigns, links } = await loadContent(supabase, ws.id);
+  const s = contentStats(posts, pillars);
   const today = todayBR();
-  const ym = /^\d{4}-(0[1-9]|1[0-2])$/.test(sp.m ?? '') ? sp.m! : today.slice(0, 7);
-  const [y, mo] = ym.split('-').map(Number);
-  const weeks = monthGrid(y, mo);
-  const from = weeks[0][0].date, to = weeks[weeks.length - 1][6].date;
+  const next = posts.filter((p) => p.bucket === 'calendario' && p.publish_date && p.publish_date >= today && p.publish_date <= addDays(today, 7) && p.status !== 'publicado').slice(0, 8);
+  const pn = new Map(pillars.map((p) => [p.id, p]));
+  const { data: events } = await supabase.from('content_post_events').select('id, kind, created_at, post_id, detail').eq('workspace_id', ws.id).order('created_at', { ascending: false }).limit(8);
+  const title = new Map(posts.map((p) => [p.id, p.title]));
+  const months = Object.keys(s.perMonth).sort();
+  const maxStage = Math.max(1, ...Object.values(s.byStage));
 
-  let q = supabase.from('content_posts').select('id, title, network, format, status, publish_date, client_id').eq('workspace_id', ws.id).limit(1000);
-  if (view === 'calendario') q = q.gte('publish_date', from).lte('publish_date', to);
-  else if (view === 'quadro') q = q.or(`status.neq.publicado,publish_date.gte.${today}`).order('publish_date', { nullsFirst: false });
-  if (sp.network) q = q.eq('network', sp.network);
-  if (sp.client === 'proprio') q = q.is('client_id', null);
-  else if (sp.client && /^[0-9a-f-]{36}$/i.test(sp.client)) q = q.eq('client_id', sp.client);
-  const [{ data: posts }, { data: clients }, { data: pillars }] = await Promise.all([
-    q,
-    supabase.from('clients').select('id, name').eq('workspace_id', ws.id).order('name').limit(500),
-    supabase.from('content_pillars').select('id, name, description, client_id').eq('workspace_id', ws.id).order('name'),
-  ]);
-  const cn = new Map((clients ?? []).map((c) => [c.id, c.name]));
-  const extra = `${sp.network ? `&network=${sp.network}` : ''}${sp.client ? `&client=${sp.client}` : ''}`;
-  const tab = (k: string, label: string) => ({ key: k, label, href: `/conteudo?view=${k}${extra}${k === 'calendario' ? `&m=${ym}` : ''}` });
-  const perNet = new Map<string, number>();
-  (posts ?? []).forEach((p) => perNet.set(p.network, (perNet.get(p.network) ?? 0) + 1));
-  const byDay = new Map<string, NonNullable<typeof posts>>();
-  (posts ?? []).forEach((p) => p.publish_date && byDay.set(p.publish_date, [...(byDay.get(p.publish_date) ?? []), p]));
-
+  if (!posts.length) {
+    return (<><PageHeader title="Planejamento de conteúdo" subtitle="Pilares, calendário editorial e Kanban de produção usando os mesmos registros." /><Empty title="Nenhum conteúdo ainda" text="Crie um conteúdo ou importe o planejamento (somente administradores)." action={open && <div className="flex justify-center gap-2"><Link href="/conteudo/novo" className="btn btn-primary">Novo conteúdo</Link><Link href="/conteudo/importar" className="btn">Importar planejamento</Link></div>} /></>);
+  }
   return (
     <>
-      <PageHeader title="Planejamento de conteúdo" subtitle="Calendário editorial por rede social, do rascunho à publicação." actions={open && <Link href="/conteudo/novo" className="btn btn-primary">Novo conteúdo</Link>} />
-      <Tabs current={view} items={[tab('calendario', 'Calendário'), tab('quadro', 'Quadro por etapa'), tab('pilares', 'Pilares de conteúdo')]} />
-
-      {view !== 'pilares' && (
-        <form className="mb-5 flex flex-wrap items-center gap-2">
-          <input type="hidden" name="view" value={view} /><input type="hidden" name="m" value={ym} />
-          <select name="network" defaultValue={sp.network ?? ''} className="input w-auto"><option value="">Todas as redes</option>{Object.entries(NETWORKS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
-          <select name="client" defaultValue={sp.client ?? ''} className="input w-auto"><option value="">Todos os perfis</option><option value="proprio">Próprios</option>{clients?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-          <button className="btn">Filtrar</button>
-          {view === 'calendario' && <div className="ml-auto"><MonthNav base="/conteudo" ym={ym} label={`${MONTHS_PT[mo - 1]} ${y}`} extra={`&view=calendario${extra}`} /></div>}
-        </form>
-      )}
-
-      {view === 'calendario' && (<>
-        <div className="mb-4 flex flex-wrap gap-2 text-xs">{Object.entries(NETWORKS).filter(([k]) => perNet.has(k)).map(([k, v]) => <span key={k} className="badge"><i className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: v.color }} />{v.label}: {perNet.get(k)}</span>)}</div>
-        <div className="overflow-x-auto"><div className="min-w-[760px] overflow-hidden rounded-2xl border border-line bg-surface">
-          <div className="grid grid-cols-7 border-b border-line bg-subtle/50 text-center text-xs font-medium uppercase tracking-wider text-muted">{['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((d) => <div key={d} className="py-2">{d}</div>)}</div>
-          {weeks.map((w, wi) => (
-            <div key={wi} className="grid grid-cols-7 divide-x divide-line border-b border-line last:border-b-0">
-              {w.map((c) => (
-                <div key={c.date} className={`min-h-28 p-1.5 ${c.inMonth ? '' : 'bg-subtle/40'} ${c.date === today ? 'bg-accent/5' : ''}`}>
-                  <div className="mb-1 flex items-center justify-between text-xs text-muted">{open && c.inMonth ? <Link href={`/conteudo/novo?date=${c.date}${sp.network ? `&network=${sp.network}` : ''}`} className="opacity-0 hover:opacity-100 focus:opacity-100" aria-label={`Novo conteúdo em ${dateBR(c.date)}`}>+</Link> : <span />}<span className={c.date === today ? 'font-bold text-accent-ink' : ''}>{pad2(Number(c.date.slice(8)))}</span></div>
-                  <div className="space-y-1">{(byDay.get(c.date) ?? []).map((p) => (
-                    <Link key={p.id} href={`/conteudo/${p.id}`} title={`${NETWORKS[p.network]?.label} · ${FORMATS[p.format]} · ${p.title}`} className={`block truncate rounded border-l-4 bg-subtle px-1.5 py-0.5 text-[11px] ${p.status === 'publicado' ? 'opacity-60' : ''}`} style={{ borderColor: NETWORKS[p.network]?.color }}>{p.title}</Link>))}</div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div></div>
-        {!posts?.length && <p className="mt-4 text-center text-sm text-muted">Nada planejado neste mês. Passe o mouse sobre um dia e clique em “+”.</p>}
-      </>)}
-
-      {view === 'quadro' && (!posts?.length ? <Empty title="Nenhum conteúdo no quadro" text="Anote ideias e mova pelas etapas até publicar." action={open && <Link href="/conteudo/novo" className="btn btn-primary">Criar conteúdo</Link>} /> : (
-        <div className="flex gap-4 overflow-x-auto pb-4">{POST_STATUS.map((s) => {
-          const items = posts.filter((p) => p.status === s.key);
-          return (
-            <section key={s.key} className="w-72 shrink-0 rounded-2xl border border-line bg-subtle/50 p-3">
-              <header className="mb-3 flex justify-between px-1.5"><h3 className="text-sm font-semibold">{s.label}</h3><span className="text-xs text-muted">{items.length}</span></header>
-              <div className="space-y-2.5">{items.map((p) => (
-                <article key={p.id} className="rounded-xl border border-line border-l-4 bg-surface p-3" style={{ borderLeftColor: NETWORKS[p.network]?.color }}>
-                  <Link href={`/conteudo/${p.id}`} className="text-sm font-medium hover:underline">{p.title}</Link>
-                  <div className="mt-1 flex flex-wrap gap-x-2 text-xs text-muted"><span>{NETWORKS[p.network]?.label} · {FORMATS[p.format]}</span>{p.publish_date && <span>{dateBR(p.publish_date)}</span>}{p.client_id && <span>{cn.get(p.client_id)}</span>}</div>
-                  {open && <div className="mt-2"><AutoSelect action={setPostStatus.bind(null, p.id)} defaultValue={p.status} label={`Etapa de ${p.title}`} options={POST_STATUS.map((x) => ({ value: x.key, label: x.label }))} /></div>}
-                </article>))}</div>
-            </section>
-          );
-        })}</div>
-      ))}
-
-      {view === 'pilares' && (
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-3 lg:col-span-2">
-            {!pillars?.length ? <Empty title="Defina seus pilares" text="Pilares são os 3–5 temas que sustentam sua comunicação (ex.: educação, bastidores, prova, oferta). Cada post deve pertencer a um." /> : pillars.map((p) => (
-              <div key={p.id} className="card flex items-start justify-between gap-4 !p-4"><div><div className="font-medium">{p.name} {p.client_id && <Badge>{cn.get(p.client_id)}</Badge>}</div>{p.description && <p className="mt-1 text-sm text-muted">{p.description}</p>}</div>
-                {open && <form action={deletePillar.bind(null, p.id)}><SubmitButton className="text-xs text-danger underline" pendingText="…" confirm="Remover pilar? Os posts continuam, sem pilar.">Remover</SubmitButton></form>}</div>))}
-          </div>
-          {open && <Section title="Novo pilar"><form action={createPillar} className="space-y-3"><Field label="Nome"><input name="name" required className="input" /></Field><Field label="Descrição"><textarea name="description" rows={3} className="input" /></Field><Field label="Cliente (opcional)"><select name="client_id" className="input"><option value="">— Próprio —</option>{clients?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field><SubmitButton pendingText="…">Criar pilar</SubmitButton></form></Section>}
-        </div>
-      )}
+      <PageHeader title="Planejamento de conteúdo" subtitle="Um só conjunto de registros alimenta pilares, calendário e Kanban. A data é do planejamento editorial: não agenda nada em rede social." actions={open && <Link href="/conteudo/novo" className="btn btn-primary">Novo conteúdo</Link>} />
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Planejados com data" value={num(s.planned)} tone="accent" hint={months.map((m) => `${MONTHS_PT[Number(m.slice(5)) - 1].slice(0, 3)} ${s.perMonth[m]}`).join(' · ')} href="/conteudo/calendario" />
+        <Stat label="Publicados (confirmados)" value={num(s.published)} tone={s.published ? 'ok' : undefined} hint="com data e confirmação reais" href="/conteudo/kanban" />
+        <Stat label="Pendentes" value={num(s.pending)} hint="planejados ainda não publicados" />
+        <Stat label="Acervo e ideias sem data" value={num(s.reserve.acervo + s.reserve.remanejado + s.reserve.ideia)} hint={`${s.reserve.acervo} acervo · ${s.reserve.remanejado} remanejados · ${s.reserve.ideia} ideias`} href="/conteudo/acervo" />
+      </div>
+      <Section title="Progresso do planejamento"><div className="mb-2 flex justify-between text-sm"><span>{s.published} de {s.planned} publicados</span><span className="text-muted">{pct(s.progress)}</span></div><ProgressBar value={s.progress} /><p className="mt-2 text-xs text-muted">Só conta como publicado o que tem data/hora real de publicação confirmada. Alcance e conversão não são medidos aqui.</p></Section>
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Section title="Por pilar" actions={<Link href="/conteudo/pilares" className="text-xs underline">Gerenciar pilares</Link>}>
+          <ul className="space-y-4">{s.byPillar.map((b) => { const pl = pn.get(b.id)!; return (
+            <li key={b.id}><div className="mb-1 flex justify-between text-sm"><span><i className="mr-2 inline-block h-2.5 w-2.5 rounded-full" style={{ background: pl.color }} />{pl.name}</span><span className="text-muted">{b.withDate} com data · {b.published} publ. · {b.total} no total</span></div>
+              <div className="h-2.5 overflow-hidden rounded-full bg-subtle"><div className="h-full rounded-full" style={{ width: `${s.planned ? (b.withDate / s.planned) * 100 : 0}%`, background: pl.color }} /></div></li>); })}
+            {s.noPillar > 0 && <li className="text-xs text-warn">{s.noPillar} conteúdo(s) com data sem pilar.</li>}</ul>
+        </Section>
+        <Section title="Por etapa de produção" actions={<Link href="/conteudo/kanban" className="text-xs underline">Abrir Kanban</Link>}>
+          <ul className="space-y-3">{STAGES.map((st) => (<li key={st.key}><div className="mb-1 flex justify-between text-sm"><span>{st.label}</span><span className="text-muted">{s.byStage[st.key]}</span></div><div className="h-2.5 overflow-hidden rounded-full bg-subtle"><div className="h-full rounded-full bg-accent" style={{ width: `${(s.byStage[st.key] / maxStage) * 100}%` }} /></div></li>))}</ul>
+        </Section>
+        <Section title="Próximos 7 dias (editorial)" actions={<Link href="/conteudo/calendario" className="text-xs underline">Calendário</Link>}>
+          {!next.length ? <p className="text-sm text-muted">Nada planejado para os próximos 7 dias.</p> : <ul className="space-y-2 text-sm">{next.map((p) => <li key={p.id} className="flex justify-between gap-3"><Link href={`/conteudo/${p.id}`} className="hover:underline"><i className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: pn.get(p.pillar_id ?? '')?.color ?? '#999' }} />{p.title}</Link><span className="shrink-0 text-muted">{dateBR(p.publish_date)}</span></li>)}</ul>}
+        </Section>
+        <Section title="Atividade recente">
+          {!events?.length ? <p className="text-sm text-muted">Sem atividade ainda.</p> : <ul className="space-y-2 text-sm">{events.map((e) => <li key={e.id} className="flex justify-between gap-3"><span><b className="font-medium">{KIND[e.kind] ?? e.kind}</b> · <Link href={`/conteudo/${e.post_id}`} className="hover:underline">{title.get(e.post_id) ?? 'conteúdo'}</Link></span><span className="shrink-0 text-xs text-muted">{dateTimeBR(e.created_at)}</span></li>)}</ul>}
+        </Section>
+      </div>
+      <p className="mt-6 text-xs text-muted">{campaigns.length} campanha(s) · {links.size} conteúdo(s) com campanha.</p>
     </>
   );
 }

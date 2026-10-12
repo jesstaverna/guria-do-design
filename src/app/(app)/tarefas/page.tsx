@@ -62,7 +62,7 @@ export default async function Tarefas({ searchParams }: { searchParams: Promise<
             );
           })}</tbody></table></div>
       ) : (
-        <div className="mb-6 flex gap-4 overflow-x-auto pb-4">
+        <div className="relative mb-6 flex gap-4 overflow-x-auto pb-4">
           {cols.map((c) => {
             const items = (tasks ?? []).filter((t) => t.status === c.key);
             return (

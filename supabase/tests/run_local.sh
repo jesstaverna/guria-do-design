@@ -10,4 +10,5 @@ export PGDATABASE=guria_test
 psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/local_stub.sql
 for f in migrations/*.sql; do echo ">> $f"; psql -q -o /dev/null -v ON_ERROR_STOP=1 -c "set client_min_messages = warning" -f - < "$f"; done
 psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/rules.test.sql
+psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/content.test.sql
 echo "OK — todos os testes SQL passaram"

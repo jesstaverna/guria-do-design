@@ -52,3 +52,12 @@ Navegador ─► Next.js (Server Components + Server Actions, sessão do usuári
 
 ## 6. Roadmap sugerido
 1. Cobrança recorrente + webhook · 2. E-mail transacional (convites, alertas, propostas) · 3. Portal do cliente (aprovação de conteúdo) · 4. Integrações Meta/Google Ads · 5. Assistente de IA (briefing, legendas, propostas) · 6. Exportação de dados / importação de CSV de clientes e leads · 7. Biblioteca de modelos para vender (marketplace).
+
+## Módulo de Planejamento de Conteúdo (migration 0008)
+
+Três áreas, **um único conjunto de registros** (`content_posts`): Pilares (`/conteudo/pilares`), Calendário (`/conteudo/calendario`: mês/semana/lista, semana começa na segunda) e Kanban (`/conteudo/kanban`: Ideia → Roteiro → Em produção → Em revisão → Aprovado → Agendado na plataforma → Publicado). Mover um cartão ou reagendar no calendário altera o mesmo registro; os indicadores dos pilares/painel são calculados do banco. O acervo reserva (`/conteudo/acervo`) fica separado (`bucket` = acervo/remanejado/ideia, sem data).
+
+- Tabelas novas: `content_campaigns`, `content_post_campaigns`, `content_post_events` (histórico por trigger), `content_attachments`, `content_import_runs`. `content_posts`/`content_pillars` foram **estendidas**, não duplicadas.
+- Regras no banco: 7 cards (ou 0), ManyChat sempre `enabled=false`, “Publicado” exige data real e confirmação, `manually_edited_at` marca edição manual.
+- Importação (`/conteudo/importar`, só admin): ensaio (dry-run, nada gravado) → relatório → aplicar. Idempotente por `external_id`/hash; registros editados à mão ou divergentes viram **conflito reportado**, nunca sobrescritos. Nada é publicado nem automatizado.
+- Para instalar: rode `supabase/migrations/20261012000008_content_planning.sql` (e 0006/0007 se ainda não rodou) no SQL Editor; depois importe o JSON pela tela.
