@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Icon } from './Icon';
-import { APP_NAME } from '@/lib/brand';
-import { Logo, LogoMark } from '@/components/Logo';
+import { Logo } from '@/components/Logo';
 import { Avatar } from './Avatar';
 
 export interface NavItem { key: string; label: string; href: string; icon: string; group: string }
@@ -41,12 +40,15 @@ export function Sidebar({ items, userName, roleLabel, wsName, logoUrl, avatarUrl
   );
 
   const brand = (
-    <div className="flex items-center gap-2.5 px-6 pb-4 pt-6">
-      {logoUrl /* eslint-disable-next-line @next/next/no-img-element */ ? <img src={logoUrl} alt={wsName} className="h-9 w-9 shrink-0 rounded-lg bg-white object-contain p-0.5" />
-        : <LogoMark size={34} />}
-      <div className="min-w-0 leading-tight"><div className="truncate text-sm font-semibold tracking-wide">{wsName}</div><div className="truncate text-[11px] text-muted">{APP_NAME}</div></div>
+    <div className="px-6 pb-4 pt-6">
+      <Logo size={30} />
+      <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-line px-3 py-2">
+        {logoUrl /* eslint-disable-next-line @next/next/no-img-element */ ? <img src={logoUrl} alt={wsName} className="h-7 w-7 shrink-0 rounded-md bg-white object-contain p-0.5" /> : null}
+        <div className="min-w-0 leading-tight"><div className="truncate text-sm font-medium">{wsName}</div><div className="text-[11px] text-muted">Seu estúdio</div></div>
+      </div>
     </div>
   );
+
 
   const footer = (
     <div className="space-y-3 border-t border-line p-4">
