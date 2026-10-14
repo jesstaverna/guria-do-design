@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
+import { useDragScroll, useFillViewport } from '@/components/useDragScroll';
 import { moveLead } from './actions';
 
 export interface KLead { id: string; name: string; company: string | null; potential_value_cents: number; owner: string | null; stage_id: string; daysSinceContact: number; stale: boolean }
@@ -12,6 +13,7 @@ const brl = (cents: number) => (cents / 100).toLocaleString('pt-BR', { style: 'c
 export function KanbanBoard({ stages, leads, canEdit }: { stages: KStage[]; leads: KLead[]; canEdit: boolean }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const scroller = useRef<HTMLDivElement>(null); useDragScroll(scroller); useFillViewport(scroller);
   const [error, setError] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ export function KanbanBoard({ stages, leads, canEdit }: { stages: KStage[]; lead
   return (
     <div>
       {error && <p role="alert" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">{error}</p>}
-      <div className={`relative flex gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-70' : ''}`}>
+      <div ref={scroller} className={`relative flex h-[calc(100dvh-26rem)] min-h-[20rem] gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-70' : ''}`}>
         {stages.map((s) => {
           const items = leads.filter((l) => l.stage_id === s.id);
           const total = items.reduce((a, l) => a + Number(l.potential_value_cents), 0);
@@ -43,12 +45,12 @@ export function KanbanBoard({ stages, leads, canEdit }: { stages: KStage[]; lead
             <section key={s.id} aria-label={s.name}
               onDragOver={(e) => { e.preventDefault(); setOver(s.id); }} onDragLeave={() => setOver(null)}
               onDrop={(e) => { e.preventDefault(); setOver(null); move(e.dataTransfer.getData('text/plain'), s); }}
-              className={`w-72 shrink-0 rounded-2xl border bg-subtle/50 p-3 ${over === s.id ? 'border-accent' : 'border-line'}`}>
-              <header className="mb-3 flex items-baseline justify-between px-1.5">
+              className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-subtle/50 p-3 ${over === s.id ? 'border-accent' : 'border-line'}`}>
+              <header className="mb-3 flex shrink-0 items-baseline justify-between px-1.5">
                 <h3 className="text-sm font-semibold">{s.name}</h3>
                 <span className="text-xs text-muted">{items.length} · {brl(total)}</span>
               </header>
-              <div className="space-y-2.5">
+              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1">
                 {items.map((l) => (
                   <article key={l.id} draggable={canEdit} onDragStart={(e) => e.dataTransfer.setData('text/plain', l.id)}
                     className={`rounded-xl border border-line bg-surface p-3.5 ${canEdit ? 'cursor-grab active:cursor-grabbing' : ''}`}>

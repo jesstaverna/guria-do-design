@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
+import { useDragScroll, useFillViewport } from '@/components/useDragScroll';
 import { movePostStage } from '@/app/(app)/conteudo/actions';
 import { STAGES, PRIORITY_LABEL, type StageKey } from '@/lib/content';
 import { FORMATS } from '@/lib/domain';
@@ -21,6 +22,7 @@ export function ProductionBoard({ cards, canEdit }: { cards: BoardCard[]; canEdi
   const [error, setError] = useState('');
   const [over, setOver] = useState<StageKey | null>(null);
   const [publish, setPublish] = useState<BoardCard | null>(null);
+  const scroller = useRef<HTMLDivElement>(null); useDragScroll(scroller); useFillViewport(scroller);
   const [lastCards, setLastCards] = useState(cards);
   if (cards !== lastCards) { setLastCards(cards); setItems(cards); }   // sincroniza quando o servidor reenvia
 
@@ -42,16 +44,16 @@ export function ProductionBoard({ cards, canEdit }: { cards: BoardCard[]; canEdi
   return (
     <div>
       {error && <p role="alert" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">{error}</p>}
-      <div className={`relative flex gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-80' : ''}`}>
+      <div ref={scroller} className={`relative flex h-[calc(100dvh-26rem)] min-h-[20rem] gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-80' : ''}`}>
         {STAGES.map((s) => {
           const col = items.filter((c) => c.status === s.key);
           return (
             <section key={s.key} aria-label={s.label}
               onDragOver={(e) => { if (canEdit) { e.preventDefault(); setOver(s.key); } }} onDragLeave={() => setOver(null)}
               onDrop={(e) => { e.preventDefault(); setOver(null); move(e.dataTransfer.getData('text/plain'), s.key); }}
-              className={`w-72 shrink-0 rounded-2xl border bg-subtle/50 p-3 ${over === s.key ? 'border-accent' : 'border-line'}`}>
-              <header className="mb-3 flex items-baseline justify-between px-1.5"><h3 className="text-sm font-semibold">{s.label}</h3><span className="rounded-full bg-surface px-2 text-xs text-muted">{col.length}</span></header>
-              <div className="space-y-2.5">
+              className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-subtle/50 p-3 ${over === s.key ? 'border-accent' : 'border-line'}`}>
+              <header className="mb-3 flex shrink-0 items-baseline justify-between px-1.5"><h3 className="text-sm font-semibold">{s.label}</h3><span className="rounded-full bg-surface px-2 text-xs text-muted">{col.length}</span></header>
+              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1">
                 {col.map((c) => (
                   <article key={c.id} draggable={canEdit} onDragStart={(e) => e.dataTransfer.setData('text/plain', c.id)}
                     className={`rounded-xl border border-line bg-surface p-3 ${canEdit ? 'cursor-grab active:cursor-grabbing' : ''}`} style={{ borderLeft: `4px solid ${c.pillar?.color ?? 'rgb(var(--line))'}` }}>
