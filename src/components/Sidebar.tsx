@@ -71,7 +71,7 @@ export function Sidebar({ items, userName, roleLabel, wsName, logoUrl, avatarUrl
         <Logo size={26} />
         <button onClick={() => setOpen(true)} aria-label="Abrir menu" className="btn btn-sm"><Menu className="h-4 w-4" /></button>
       </div>
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface lg:flex">{brand}{nav}{footer}</aside>
+      <aside className="app-sidebar fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-surface lg:flex">{brand}{nav}{footer}</aside>
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal>
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />

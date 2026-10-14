@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { Bell, ChevronDown, CreditCard, LogOut, Search, Settings } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { SidebarToggle } from '@/components/SidebarToggle';
 
 /** Barra superior (desktop): busca, alertas, tema e menu da pessoa com foto, nome e estúdio. */
 export function Topbar({ userName, wsName, avatarUrl, unread, isAdmin, signOut }: { userName: string; wsName: string; avatarUrl: string | null; unread: number; isAdmin: boolean; signOut: () => void | Promise<void> }) {
   return (
     <div className="flex items-center gap-3 px-6 pt-5 max-lg:hidden lg:px-10">
+      <SidebarToggle />
       <form action="/clientes" className="relative max-w-xl flex-1" role="search">
         <label htmlFor="topbar-q" className="sr-only">Buscar clientes</label>
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" strokeWidth={1.6} />

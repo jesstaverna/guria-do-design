@@ -44,7 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Suspense><Flash /></Suspense>
       <Sidebar items={items} userName={profile.full_name || profile.email || 'Usuário'} roleLabel={ROLE_LABEL[role]} wsName={ws.name} logoUrl={ws.logo_url} avatarUrl={profile.avatar_url}
         workspaces={memberships.map((m) => ({ id: m.workspace.id, name: m.workspace.name }))} currentWs={ws.id} signOut={signOut} switchWs={switchWs} />
-      <div className="lg:pl-64">
+      <div className="app-main lg:pl-64">
         {!open ? (
           <div className="bg-danger px-4 py-2.5 text-center text-sm text-white">Seu período de teste/assinatura terminou — o espaço está em <b>modo somente leitura</b>. {isAdmin && <Link href="/plano" className="underline">Ver plano</Link>}</div>
         ) : ws.status === 'trial' && (

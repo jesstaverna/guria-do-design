@@ -5,7 +5,7 @@ import { APP_NAME, APP_DESCRIPTION, THEME_KEY } from '@/lib/brand';
 export const metadata: Metadata = { title: { default: APP_NAME, template: `%s · ${APP_NAME}` }, description: APP_DESCRIPTION };
 export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 
-const themeScript = `try{var t=localStorage.getItem('${THEME_KEY}');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){}`;
+const themeScript = `try{var t=localStorage.getItem('${THEME_KEY}');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t;if(localStorage.getItem('orbiahub-sidebar')==='collapsed')document.documentElement.dataset.sidebar='collapsed'}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -32,6 +32,13 @@
   --ok: 90 200 130;
 }
 
+/* Menu lateral recolhível: libera a tela inteira (útil nos quadros Kanban). --sidebar-w alimenta o modo "tela cheia" dos quadros. */
+:root { --sidebar-w: 0rem; }
+@media (min-width: 1024px) { :root { --sidebar-w: 16rem; } }
+html[data-sidebar='collapsed'] { --sidebar-w: 0rem; }
+html[data-sidebar='collapsed'] .app-sidebar { display: none; }
+@media (min-width: 1024px) { html[data-sidebar='collapsed'] .app-main { padding-left: 0; } }
+
 html { color-scheme: light; }
 html[data-theme='dark'] { color-scheme: dark; }
 body { @apply bg-bg text-fg font-sans antialiased; }

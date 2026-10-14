@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireWorkspace } from '@/lib/session';
 import { loadContent } from '@/lib/content-data';
+import { FullBleed } from '@/components/kanban/FullBleed';
 import { ProductionBoard, type BoardCard } from '@/components/content/ProductionBoard';
 import { STAGES, filterPosts, isYm, BUCKETS } from '@/lib/content';
 import { MONTHS_PT } from '@/lib/domain';
@@ -27,6 +28,7 @@ export default async function KanbanPage({ searchParams }: { searchParams: Promi
   const filtered = sp.pilar || sp.campanha || sp.mes || sp.resp || sp.etapa || sp.grupo || sp.q;
   return (
     <>
+      <FullBleed>
       <form className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Filtros do Kanban">
         <h1 className="mr-2 text-xl font-semibold tracking-tight">Kanban de produção</h1>
         <input name="q" defaultValue={sp.q} placeholder="Buscar…" className="input !w-48 !py-1.5 text-xs" aria-label="Buscar" />
@@ -47,6 +49,7 @@ export default async function KanbanPage({ searchParams }: { searchParams: Promi
         {open && <Link href="/conteudo/novo" className="btn btn-primary btn-sm ml-auto">Novo conteúdo</Link>}
       </form>
       <ProductionBoard cards={cards} canEdit={open} />
+      </FullBleed>
     </>
   );
 }

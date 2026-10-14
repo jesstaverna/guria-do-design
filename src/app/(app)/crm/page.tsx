@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { requireWorkspace } from '@/lib/session';
 import { Empty, PageHeader, Stat } from '@/components/ui';
 import { daysSince, money } from '@/lib/format';
+import { FullBleed } from '@/components/kanban/FullBleed';
 import { KanbanBoard, type KStage } from './KanbanBoard';
 
 export const metadata = { title: 'CRM' };
@@ -43,7 +44,7 @@ export default async function Crm({ searchParams }: { searchParams: Promise<{ vi
               <tr key={l.id}><td className="td"><Link href={`/crm/${l.id}`} className="font-medium hover:underline">{l.name}</Link>{l.company && <div className="text-xs text-muted">{l.company}</div>}</td>
                 <td className="td text-muted">{kind.get(l.stage_id)?.name}</td><td className="td">{money(l.potential_value_cents)}</td><td className="td text-muted">há {l.daysSinceContact} dia(s)</td></tr>))}</tbody>
           </table></div>
-        ) : <KanbanBoard canEdit={open} stages={(stages ?? []) as KStage[]} leads={rows.map((l) => ({ id: l.id, name: l.name, company: l.company, potential_value_cents: l.potential_value_cents, owner: l.owner, stage_id: l.stage_id, pos: (l as { kanban_pos?: number | null }).kanban_pos ?? null, daysSinceContact: l.daysSinceContact, stale: l.stale }))} />}
+        ) : <FullBleed><KanbanBoard canEdit={open} stages={(stages ?? []) as KStage[]} leads={rows.map((l) => ({ id: l.id, name: l.name, company: l.company, potential_value_cents: l.potential_value_cents, owner: l.owner, stage_id: l.stage_id, pos: (l as { kanban_pos?: number | null }).kanban_pos ?? null, daysSinceContact: l.daysSinceContact, stale: l.stale }))} /></FullBleed>}
     </>
   );
 }
