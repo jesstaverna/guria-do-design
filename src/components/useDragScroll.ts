@@ -19,7 +19,7 @@ export function useDragScroll(ref: RefObject<HTMLElement | null>) {
 }
 
 /** Faz o quadro ocupar exatamente o resto da tela (as colunas rolam por dentro e a página não cresce). */
-export function useFillViewport(ref: RefObject<HTMLElement | null>, bottomGap = 150, minHeight = 320) {
+export function useFillViewport(ref: RefObject<HTMLElement | null>, bottomGap = 100, minHeight = 320) {
   useEffect(() => {
     const el = ref.current; if (!el) return;
     const fit = () => { const top = el.getBoundingClientRect().top + window.scrollY; el.style.height = `${Math.max(minHeight, window.innerHeight - top - bottomGap)}px`; };

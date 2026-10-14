@@ -29,9 +29,9 @@ function Column({ col, ids, canEdit, render, byId }: { col: KColumn; ids: string
   const { setNodeRef, isOver } = useDroppable({ id: col.id });
   return (
     <section ref={setNodeRef} aria-label={col.label} data-col={col.id}
-      className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-subtle/50 p-3 transition-colors ${isOver ? 'border-accent bg-accent/5' : 'border-line'} ${col.className ?? ''}`}>
+      className={`flex w-[17.5rem] shrink-0 flex-col rounded-2xl border bg-subtle/50 p-2.5 transition-colors ${isOver ? 'border-accent bg-accent/5' : 'border-line'} ${col.className ?? ''}`}>
       <header className="mb-3 shrink-0 px-1.5">{col.header(ids.length)}</header>
-      <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1">
+      <div className="min-h-0 flex-1 space-y-2.5 scroll-auto-hide overflow-y-auto overscroll-contain pr-0.5">
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           {ids.filter(byId).map((id) => <Card key={id} id={id} disabled={!canEdit}>{render(id)}</Card>)}
         </SortableContext>
@@ -95,7 +95,7 @@ export function KanbanDnd<T extends KItem>({ columns, items, canEdit, renderCard
   const activeItem = active ? byId.get(active) : null;
   return (
     <DndContext id="kanban-dnd" sensors={sensors} collisionDetection={collision} onDragStart={onStart} onDragOver={onOver} onDragEnd={onEnd} onDragCancel={() => { setActive(null); setLayout(startLayout.current); }}>
-      <div ref={boardRef} className={`relative flex gap-4 overflow-x-auto pb-4 ${boardClassName}`}>
+      <div ref={boardRef} className={`scroll-thin relative flex gap-3 overflow-x-auto pb-2 ${boardClassName}`}>
         {columns.map((c) => <Column key={c.id} col={c} ids={layout[c.id] ?? []} canEdit={canEdit} byId={(id) => byId.has(id)} render={(id) => renderCard(byId.get(id)!, false)} />)}
       </div>
       <DragOverlay dropAnimation={{ duration: 160, easing: 'ease-out' }}>

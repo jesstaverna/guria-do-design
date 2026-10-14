@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { requireWorkspace } from '@/lib/session';
 import { loadContent } from '@/lib/content-data';
-import { PageHeader } from '@/components/ui';
 import { ProductionBoard, type BoardCard } from '@/components/content/ProductionBoard';
 import { STAGES, filterPosts, isYm, BUCKETS } from '@/lib/content';
 import { MONTHS_PT } from '@/lib/domain';
@@ -28,20 +27,26 @@ export default async function KanbanPage({ searchParams }: { searchParams: Promi
   const filtered = sp.pilar || sp.campanha || sp.mes || sp.resp || sp.etapa || sp.grupo || sp.q;
   return (
     <>
-      <PageHeader title="Kanban de produção" subtitle="Arraste os conteúdos entre as etapas. As mudanças são salvas e atualizam calendário, pilares e painel." actions={open && <Link href="/conteudo/novo" className="btn btn-primary">Novo conteúdo</Link>} />
-      <form className="mb-5 flex flex-wrap items-center gap-2" aria-label="Filtros do Kanban">
-        <input name="q" defaultValue={sp.q} placeholder="Buscar…" className="input !w-44 !py-1.5 text-xs" aria-label="Buscar" />
-        <select name="pilar" defaultValue={sp.pilar ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Pilar"><option value="">Todos os pilares</option>{pillars.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
-        <select name="campanha" defaultValue={sp.campanha ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Campanha"><option value="">Todas as campanhas</option>{campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
-        <select name="mes" defaultValue={sp.mes ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Mês"><option value="">Todos os meses</option>{months.map((m) => <option key={m} value={m}>{MONTHS_PT[Number(m.slice(5)) - 1]} {m.slice(0, 4)}</option>)}<option value="sem-data">Sem data</option></select>
-        <select name="resp" defaultValue={sp.resp ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Responsável"><option value="">Todos os responsáveis</option><option value="nenhum">Sem responsável</option>{members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
-        <select name="etapa" defaultValue={sp.etapa ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Status"><option value="">Todos os status</option>{STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}</select>
-        <select name="grupo" defaultValue={sp.grupo ?? ''} className="input !w-auto !py-1.5 text-xs" aria-label="Grupo"><option value="">Calendário + acervo + ideias</option>{Object.entries(BUCKETS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
-        <button className="btn btn-sm">Filtrar</button>{filtered && <Link href="/conteudo/kanban" className="text-xs underline">Limpar</Link>}
-        <span className="ml-auto text-xs text-muted">{cards.length} cartão(ões)</span>
+      <form className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Filtros do Kanban">
+        <h1 className="mr-2 text-xl font-semibold tracking-tight">Kanban de produção</h1>
+        <input name="q" defaultValue={sp.q} placeholder="Buscar…" className="input !w-48 !py-1.5 text-xs" aria-label="Buscar" />
+        <details className="group relative" open={!!filtered && !sp.q}>
+          <summary className="btn btn-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">Filtros{filtered && !sp.q ? ' •' : ''}</summary>
+          <div className="absolute left-0 z-30 mt-2 grid w-72 gap-2 rounded-xl border border-line bg-surface p-3 shadow-xl">
+        <select name="pilar" defaultValue={sp.pilar ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Pilar"><option value="">Todos os pilares</option>{pillars.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
+        <select name="campanha" defaultValue={sp.campanha ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Campanha"><option value="">Todas as campanhas</option>{campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+        <select name="mes" defaultValue={sp.mes ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Mês"><option value="">Todos os meses</option>{months.map((m) => <option key={m} value={m}>{MONTHS_PT[Number(m.slice(5)) - 1]} {m.slice(0, 4)}</option>)}<option value="sem-data">Sem data</option></select>
+        <select name="resp" defaultValue={sp.resp ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Responsável"><option value="">Todos os responsáveis</option><option value="nenhum">Sem responsável</option>{members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+        <select name="etapa" defaultValue={sp.etapa ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Status"><option value="">Todos os status</option>{STAGES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}</select>
+        <select name="grupo" defaultValue={sp.grupo ?? ''} className="input !w-full !py-1.5 text-xs" aria-label="Grupo"><option value="">Calendário + acervo + ideias</option>{Object.entries(BUCKETS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+            <button className="btn btn-sm btn-primary">Aplicar filtros</button>
+          </div>
+        </details>
+        {filtered && <Link href="/conteudo/kanban" className="text-xs underline">Limpar</Link>}
+        <span className="text-xs text-muted" title="✎ legenda · 💬 ManyChat (rascunho) · 📎 anexos · ● revisão necessária. Arraste os cartões entre as etapas; “Publicado” exige data/hora reais e confirmação.">{cards.length} cartão(ões) · arraste para mover</span>
+        {open && <Link href="/conteudo/novo" className="btn btn-primary btn-sm ml-auto">Novo conteúdo</Link>}
       </form>
       <ProductionBoard cards={cards} canEdit={open} />
-      <p className="mt-2 text-xs text-muted">✎ legenda · 💬 ManyChat (rascunho) · 📎 anexos · ● revisão necessária antes de publicar. “Publicado” exige data/hora reais e confirmação.</p>
     </>
   );
 }
