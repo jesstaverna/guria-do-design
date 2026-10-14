@@ -6,6 +6,7 @@ import { FullBleed } from '@/components/kanban/FullBleed';
 import { KanbanBoard, type KStage } from './KanbanBoard';
 
 export const metadata = { title: 'CRM' };
+const Plain = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
 export default async function Crm({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const { supabase, ws, open } = await requireWorkspace('crm');
@@ -26,8 +27,9 @@ export default async function Crm({ searchParams }: { searchParams: Promise<{ vi
   const pipeline = openLeads.reduce((s, l) => s + Number(l.potential_value_cents), 0);
   const weighted = openLeads.reduce((s, l) => s + (Number(l.potential_value_cents) * l.prob) / 100, 0);
 
+  const Wrap = view === 'lista' ? Plain : FullBleed;
   return (
-    <>
+    <Wrap>
       <PageHeader title="CRM" subtitle="Seu funil de vendas: do primeiro contato ao fechamento." actions={<>
         <Link href={view === 'lista' ? '/crm' : '/crm?view=lista'} className="btn">{view === 'lista' ? 'Ver Kanban' : 'Ver lista'}</Link>
         {open && <Link href="/crm/novo" className="btn btn-primary">Novo lead</Link>}</>} />
@@ -44,7 +46,7 @@ export default async function Crm({ searchParams }: { searchParams: Promise<{ vi
               <tr key={l.id}><td className="td"><Link href={`/crm/${l.id}`} className="font-medium hover:underline">{l.name}</Link>{l.company && <div className="text-xs text-muted">{l.company}</div>}</td>
                 <td className="td text-muted">{kind.get(l.stage_id)?.name}</td><td className="td">{money(l.potential_value_cents)}</td><td className="td text-muted">há {l.daysSinceContact} dia(s)</td></tr>))}</tbody>
           </table></div>
-        ) : <FullBleed><KanbanBoard canEdit={open} stages={(stages ?? []) as KStage[]} leads={rows.map((l) => ({ id: l.id, name: l.name, company: l.company, potential_value_cents: l.potential_value_cents, owner: l.owner, stage_id: l.stage_id, pos: (l as { kanban_pos?: number | null }).kanban_pos ?? null, daysSinceContact: l.daysSinceContact, stale: l.stale }))} /></FullBleed>}
-    </>
+        ) : <KanbanBoard canEdit={open} stages={(stages ?? []) as KStage[]} leads={rows.map((l) => ({ id: l.id, name: l.name, company: l.company, potential_value_cents: l.potential_value_cents, owner: l.owner, stage_id: l.stage_id, pos: (l as { kanban_pos?: number | null }).kanban_pos ?? null, daysSinceContact: l.daysSinceContact, stale: l.stale }))} />}
+    </Wrap>
   );
 }
