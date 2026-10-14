@@ -1,79 +1,63 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useRef, useState, useTransition } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useDragScroll, useFillViewport } from '@/components/useDragScroll';
-import { moveLead } from './actions';
+import { KanbanDnd, type DropInfo, type DropResult, type KColumn } from '@/components/kanban/KanbanDnd';
+import { moveLead, reorderLeads } from './actions';
 
-export interface KLead { id: string; name: string; company: string | null; potential_value_cents: number; owner: string | null; stage_id: string; daysSinceContact: number; stale: boolean }
+export interface KLead { id: string; name: string; company: string | null; potential_value_cents: number; owner: string | null; stage_id: string; daysSinceContact: number; stale: boolean; pos: number | null }
 export interface KStage { id: string; name: string; kind: 'open' | 'won' | 'lost' }
 
 const brl = (cents: number) => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
 
+/** Kanban do CRM: arraste os leads (como no Trello) entre as etapas e dentro da etapa; a ordem fica salva. */
 export function KanbanBoard({ stages, leads, canEdit }: { stages: KStage[]; leads: KLead[]; canEdit: boolean }) {
   const router = useRouter();
-  const [pending, start] = useTransition();
   const scroller = useRef<HTMLDivElement>(null); useDragScroll(scroller); useFillViewport(scroller);
+  const [local, setLocal] = useState(leads);
+  const [lastLeads, setLastLeads] = useState(leads);
   const [error, setError] = useState<string | null>(null);
-  const [over, setOver] = useState<string | null>(null);
+  if (leads !== lastLeads) { setLastLeads(leads); setLocal(leads); }
 
-  function move(leadId: string, stage: KStage) {
-    const lead = leads.find((l) => l.id === leadId);
-    if (!canEdit || !lead || lead.stage_id === stage.id) return;
+  const stageById = useMemo(() => new Map(stages.map((s) => [s.id, s])), [stages]);
+  const columns: KColumn[] = useMemo(() => stages.map((s) => ({
+    id: s.id, label: s.name,
+    header: (n) => { const total = local.filter((l) => l.stage_id === s.id).reduce((a, l) => a + Number(l.potential_value_cents), 0); return <div className="flex items-baseline justify-between"><h3 className="text-sm font-semibold">{s.name}</h3><span className="text-xs text-muted">{n} · {brl(total)}</span></div>; },
+  })), [stages, local]);
+  const items = useMemo(() => local.map((l, i) => ({ ...l, col: l.stage_id, _i: i })).sort((a, b) => (a.pos ?? Infinity) - (b.pos ?? Infinity) || a._i - b._i), [local]);
+
+  async function onDrop(d: DropInfo): Promise<DropResult> {
+    const lead = local.find((l) => l.id === d.id); const stage = stageById.get(d.to);
+    if (!lead || !stage) return 'revert';
     let reason: string | undefined;
-    if (stage.kind === 'lost') {
+    if (d.from !== d.to && stage.kind === 'lost') {
       const r = window.prompt('Motivo da perda (obrigatório):');
-      if (!r?.trim()) return;
+      if (!r?.trim()) return 'revert';
       reason = r;
     }
-    setError(null);
-    start(async () => {
-      const err = await moveLead(leadId, stage.id, reason);
-      if (err) setError(err);
-      router.refresh();
-    });
+    setError(null); const before = local;
+    setLocal((cur) => cur.map((l) => { const i = d.ordered.indexOf(l.id); return i >= 0 ? { ...l, pos: (i + 1) * 1000, ...(l.id === d.id ? { stage_id: d.to } : {}) } : l; }));
+    if (d.from !== d.to) { const err = await moveLead(d.id, d.to, reason); if (err) { setError(err); setLocal(before); return 'revert'; } }
+    const err2 = await reorderLeads(d.ordered); if (err2) { setError(err2); setLocal(before); return 'revert'; }
+    router.refresh(); return 'ok';
   }
 
   return (
     <div>
       {error && <p role="alert" className="mb-3 rounded-xl bg-danger/10 p-3 text-sm text-danger">{error}</p>}
-      <div ref={scroller} className={`relative flex h-[calc(100dvh-26rem)] min-h-[20rem] gap-4 overflow-x-auto pb-4 ${pending ? 'opacity-70' : ''}`}>
-        {stages.map((s) => {
-          const items = leads.filter((l) => l.stage_id === s.id);
-          const total = items.reduce((a, l) => a + Number(l.potential_value_cents), 0);
-          return (
-            <section key={s.id} aria-label={s.name}
-              onDragOver={(e) => { e.preventDefault(); setOver(s.id); }} onDragLeave={() => setOver(null)}
-              onDrop={(e) => { e.preventDefault(); setOver(null); move(e.dataTransfer.getData('text/plain'), s); }}
-              className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-subtle/50 p-3 ${over === s.id ? 'border-accent' : 'border-line'}`}>
-              <header className="mb-3 flex shrink-0 items-baseline justify-between px-1.5">
-                <h3 className="text-sm font-semibold">{s.name}</h3>
-                <span className="text-xs text-muted">{items.length} · {brl(total)}</span>
-              </header>
-              <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto overscroll-contain pr-1">
-                {items.map((l) => (
-                  <article key={l.id} draggable={canEdit} onDragStart={(e) => e.dataTransfer.setData('text/plain', l.id)}
-                    className={`rounded-xl border border-line bg-surface p-3.5 ${canEdit ? 'cursor-grab active:cursor-grabbing' : ''}`}>
-                    <Link href={`/crm/${l.id}`} className="text-sm font-medium hover:underline">{l.name}</Link>
-                    {l.company && <div className="text-xs text-muted">{l.company}</div>}
-                    <div className="mt-2 flex items-center justify-between text-xs">
-                      <span className="font-medium">{brl(Number(l.potential_value_cents))}</span>
-                      <span className="text-muted">{l.owner ?? 'Sem resp.'}</span>
-                    </div>
-                    {l.stale && s.kind === 'open' && <div className="mt-2 rounded-md bg-amber-500/15 px-2 py-1 text-[11px] text-warn">Sem contato há {l.daysSinceContact} dias</div>}
-                    {canEdit && (<>
-                      <label className="sr-only" htmlFor={`mv-${l.id}`}>Mover {l.name}</label>
-                      <select id={`mv-${l.id}`} value={l.stage_id} onChange={(e) => move(l.id, stages.find((x) => x.id === e.target.value)!)} className="mt-2 w-full rounded-lg border border-line bg-surface px-2 py-1 text-xs">
-                        {stages.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
-                      </select></>)}
-                  </article>
-                ))}
-                {!items.length && <p className="px-1.5 py-6 text-center text-xs text-muted">{canEdit ? 'Arraste um lead para cá' : 'Vazio'}</p>}
-              </div>
-            </section>
-          );
-        })}
-      </div>
+      <KanbanDnd columns={columns} items={items} canEdit={canEdit} onDrop={onDrop} boardRef={scroller} boardClassName="h-[calc(100dvh-26rem)] min-h-[20rem]"
+        renderCard={(l) => (
+          <article className="rounded-xl border border-line bg-surface p-3.5">
+            <Link href={`/crm/${l.id}`} onPointerDown={(e) => e.stopPropagation()} className="text-sm font-medium hover:underline">{l.name}</Link>
+            {l.company && <div className="text-xs text-muted">{l.company}</div>}
+            <div className="mt-2 flex items-center justify-between text-xs">
+              <span className="font-medium">{brl(Number(l.potential_value_cents))}</span>
+              <span className="text-muted">{l.owner ?? 'Sem resp.'}</span>
+            </div>
+            {l.stale && stageById.get(l.stage_id)?.kind === 'open' && <div className="mt-2 rounded-md bg-amber-500/15 px-2 py-1 text-[11px] text-warn">Sem contato há {l.daysSinceContact} dias</div>}
+          </article>
+        )} />
     </div>
   );
 }

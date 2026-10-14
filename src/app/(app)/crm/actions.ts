@@ -51,6 +51,15 @@ export async function moveLead(id: string, stageId: string, lostReason?: string)
   return null;
 }
 
+/** Grava a ordem dos cartões de uma etapa do funil (arrastar e soltar). */
+export async function reorderLeads(ids: string[]): Promise<string | null> {
+  const { supabase, open } = await requireWorkspace('crm');
+  if (!open) return 'Assinatura inativa: o sistema está em modo somente leitura.';
+  if (!Array.isArray(ids) || ids.length > 500 || !ids.every((i) => /^[0-9a-f-]{36}$/i.test(i))) return 'Ordem inválida.';
+  const { error } = await supabase.rpc('kanban_renumber', { p_kind: 'leads', p_ids: ids });
+  return error ? 'Não foi possível salvar a ordem.' : null;
+}
+
 export async function addInteraction(leadId: string, fd: FormData) {
   const { supabase, ws, user } = await requireWritable('crm');
   const content = str(fd, 'content');

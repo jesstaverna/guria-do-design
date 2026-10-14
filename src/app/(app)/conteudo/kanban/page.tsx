@@ -19,7 +19,7 @@ export default async function KanbanPage({ searchParams }: { searchParams: Promi
   if (month === 'sem-data') list = list.filter((p) => !p.publish_date);
   const pm = new Map(pillars.map((p) => [p.id, p])), cm = new Map(campaigns.map((c) => [c.id, c.name])), mm = new Map(members.map((m) => [m.id, m.name]));
   const cards: BoardCard[] = list.map((p) => ({
-    id: p.id, title: p.title, status: p.status, publish_date: p.publish_date, priority: p.priority, format: p.format, bucket: p.bucket, review_required: p.review_required,
+    id: p.id, title: p.title, pos: (p as { kanban_pos?: number | null }).kanban_pos ?? null, status: p.status, publish_date: p.publish_date, priority: p.priority, format: p.format, bucket: p.bucket, review_required: p.review_required,
     pillar: pm.get(p.pillar_id ?? '') ? { name: pm.get(p.pillar_id!)!.name, color: pm.get(p.pillar_id!)!.color } : null,
     campaigns: (links.get(p.id) ?? []).map((id) => cm.get(id) ?? '').filter(Boolean), assignee: p.assignee_id ? mm.get(p.assignee_id) ?? null : null,
     attachments: attachments.get(p.id) ?? 0, has_caption: p.has_caption, has_manychat: p.has_manychat,

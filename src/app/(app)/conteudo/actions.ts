@@ -86,6 +86,16 @@ export async function movePostStage(id: string, stage: StageKey, opts?: { publis
   return { ok: true, savedAt: new Date().toISOString() };
 }
 
+/** Grava a ordem dos cartões de uma coluna do Kanban (arrastar e soltar). */
+export async function reorderColumn(ids: string[]): Promise<Result> {
+  const { supabase, open } = await requireWorkspace('conteudo');
+  if (!open) return { error: 'Assinatura inativa: modo somente leitura.' };
+  if (!Array.isArray(ids) || ids.length > 500 || !ids.every((i) => UUID.test(i))) return { error: 'Ordem inválida.' };
+  const { error } = await supabase.rpc('kanban_renumber', { p_kind: 'content', p_ids: ids });
+  if (error) return { error: dbMessage(error) };
+  return { ok: true, savedAt: new Date().toISOString() };
+}
+
 export async function reschedulePost(id: string, newDate: string | null): Promise<Result> {
   return savePostPatch(id, { publish_date: newDate });
 }

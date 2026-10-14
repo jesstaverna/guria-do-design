@@ -43,3 +43,20 @@ update public.prospects set status = 'analisado' where name = 'Clínica Sorriso 
 select t.ok((select (public.run_scheduled_scans() ? 'purged_google_snapshots') ), 'worker diário também limpa dados antigos do Google');
 select t.ok((select website is null and place_id = 'pl1' from public.prospects where workspace_id = t.get('wsA')::uuid and place_id = 'pl1'), 'dados do Google (site) removidos após 30 dias; place_id mantido');
 select t.ok((select website is not null from public.prospects where name = 'Clínica Sorriso (B)'), 'prospecto já trabalhado mantém os dados');
+
+-- ===== ordem dos cartões nos Kanbans (0012) =====
+select t.login('00000000-0000-0000-0000-00000000000a'); set role authenticated;
+insert into public.leads (workspace_id, name, email, stage_id) select t.get('wsA')::uuid, 'Kanban ' || g, 'k' || g || '@t.com', (select id from public.pipeline_stages where workspace_id = t.get('wsA')::uuid order by position limit 1) from generate_series(1, 3) g;
+select t.put('kids', (select string_agg(id::text, ',' order by name desc) from public.leads where name like 'Kanban %'));
+select t.ok(public.kanban_renumber('leads', string_to_array(t.get('kids'), ',')::uuid[]) = 3, 'renumera a coluna inteira');
+select t.ok((select string_agg(name, ',' order by kanban_pos) = 'Kanban 3,Kanban 2,Kanban 1' from public.leads where name like 'Kanban %'), 'a ordem recebida é a ordem gravada');
+select t.raises($$select public.kanban_renumber('outra', '{}')$$, '22023');
+reset role;
+select t.login('00000000-0000-0000-0000-00000000000b'); set role authenticated;
+select t.ok(public.kanban_renumber('leads', string_to_array(t.get('kids'), ',')::uuid[]) = 0, 'outro estúdio não consegue reordenar cartões alheios (RLS)');
+reset role;
+select t.login('00000000-0000-0000-0000-00000000000a'); set role authenticated;
+select t.put('cpid', (select id::text from public.content_posts where workspace_id = t.get('wsA')::uuid and manually_edited_at is null limit 1));
+select t.ok(public.kanban_renumber('content', array[t.get('cpid')::uuid]) = 1, 'renumera cartões de conteúdo');
+select t.ok((select manually_edited_at is null and kanban_pos = 1000 from public.content_posts where id = t.get('cpid')::uuid), 'reordenar não marca conteúdo como editado manualmente');
+reset role;

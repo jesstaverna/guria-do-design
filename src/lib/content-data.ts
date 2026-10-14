@@ -2,7 +2,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { PillarLite, PostLite } from '@/lib/content';
 
-export const POST_COLS = 'id, title, hook, format, network, status, bucket, publish_date, pillar_id, priority, assignee_id, keyword, category, review_required, published_at, cards_count, has_caption, has_prompt, has_manychat, manually_edited_at';
+export const POST_COLS = 'id, title, kanban_pos, hook, format, network, status, bucket, publish_date, pillar_id, priority, assignee_id, keyword, category, review_required, published_at, cards_count, has_caption, has_prompt, has_manychat, manually_edited_at';
 
 export interface Campaign { id: string; name: string; period: string | null; kind: string | null; status: string | null; notes: string | null; active: boolean }
 export interface Member { id: string; name: string }
