@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { APP_URL } from '@/lib/brand';
+import { suggestTemplate } from '@/lib/onboarding';
 import { requireWorkspace } from '@/lib/session';
 import { Badge, Field, PageHeader, Section } from '@/components/ui';
 import { CopyButton } from '@/components/ClientButtons';
@@ -19,13 +20,15 @@ export default async function ProposalEditor({ params }: { params: Promise<{ id:
   const { supabase, ws, isAdmin, open } = await requireWorkspace('propostas');
   const { data: p } = await supabase.from('proposals').select('*').eq('id', id).eq('workspace_id', ws.id).maybeSingle();
   if (!p) notFound();
-  const [{ data: items }, { data: events }, { data: leads }, { data: clients }, { data: contract }] = await Promise.all([
+  const [{ data: items }, { data: events }, { data: leads }, { data: clients }, { data: contract }, { data: templates }] = await Promise.all([
     supabase.from('proposal_items').select('*').eq('proposal_id', id).order('position').order('id'),
     supabase.from('proposal_events').select('id, kind, detail, ip, created_at').eq('proposal_id', id).order('created_at', { ascending: false }),
     supabase.from('leads').select('id, name').eq('workspace_id', ws.id).order('created_at', { ascending: false }).limit(300),
     supabase.from('clients').select('id, name').eq('workspace_id', ws.id).order('name').limit(500),
     supabase.from('contracts').select('id').eq('proposal_id', id).limit(1),
+    supabase.from('onboarding_templates').select('id, name, keywords').eq('workspace_id', ws.id).eq('active', true).order('position'),
   ]);
+  const suggested = suggestTemplate(`${p.title} ${(items ?? []).map((i) => i.name).join(' ')}`, templates ?? []);
   const locked = p.status === 'aceita' || !open;
   const link = `${APP_URL}/p/${p.token}`;
   const st = PROPOSAL_STATUS[p.status];
@@ -120,9 +123,10 @@ export default async function ProposalEditor({ params }: { params: Promise<{ id:
                 {isAdmin && !p.activated_at && open && (
                   <form action={activateProposal.bind(null, id)} className="space-y-2 rounded-xl border border-line p-3">
                     <div className="text-sm font-medium">Ativar financeiro</div>
-                    <p className="text-xs text-muted">Gera as parcelas do valor pontual, as mensalidades e (opcional) um projeto.</p>
+                    <p className="text-xs text-muted">Gera as parcelas do valor pontual, as mensalidades e (opcional) um projeto com onboarding.</p>
                     <div className="grid grid-cols-2 gap-2"><Field label="Parcelas"><input name="installments" type="number" min={1} max={36} defaultValue={2} className="input !py-1.5" /></Field><Field label="1º vencimento"><input name="first_due" type="date" defaultValue={todayBR()} required className="input !py-1.5" /></Field></div>
                     <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="create_project" defaultChecked />Criar projeto</label>
+                    {!!templates?.length && <Field label="Onboarding do cliente" hint="Cria as etapas com datas e o Espaço do Cliente. Você pode ajustar depois."><select name="template_id" defaultValue={suggested ?? ''} className="input !py-1.5"><option value="">Sem onboarding</option>{templates.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></Field>}
                     <SubmitButton className="btn btn-primary btn-sm" pendingText="Ativando…">Ativar</SubmitButton>
                   </form>
                 )}

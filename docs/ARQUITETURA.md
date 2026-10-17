@@ -72,3 +72,13 @@ Três áreas, **um único conjunto de registros** (`content_posts`): Pilares (`/
 - Análise de sites com proteção contra SSRF (`src/integrations/net-safe.ts`): só http(s), bloqueia IP privado, limita tempo/tamanho/redirecionamentos.
 - **Não envia mensagens** (nem e-mail nem WhatsApp). Você aborda por conta própria; o sistema só organiza e registra. Envio automático com aprovação existe no Muvens OS e fica para uma etapa futura.
 - A chamada à API real do Google **não foi testada** (sem credencial no desenvolvimento): valide em homologação e confira cotas, custos e os termos da Plataforma Google Maps e a LGPD (legítimo interesse).
+
+## Onboarding do cliente (migration 0013)
+
+Ao **ativar uma proposta aceita** (um clique do administrador, como já era), o estúdio pode escolher um **modelo de onboarding**: o sistema cria o projeto, as **tarefas encadeadas** (datas somando a duração de cada etapa), os recebíveis/mensalidades e o **Espaço do Cliente**. O modelo é sugerido pelas palavras-chave (título e itens da proposta). Projetos já existentes podem iniciar o onboarding pela própria página do projeto.
+
+- **Modelos** (`onboarding_templates` / `onboarding_steps`, por estúdio, editáveis em *Projetos → Modelos de onboarding*): 4 padrões (Identidade visual, Social media, Site/Landing page, Tráfego pago). Etapa = título, instrução ao cliente, dias, quem faz (estúdio/cliente) e se aparece para o cliente.
+- **Cronograma que se ajusta**: ao mudar o prazo de uma etapa (editar a tarefa), `shift_chain` desloca as etapas seguintes ainda abertas e o prazo final do projeto, e avisa nos alertas.
+- **Espaço do Cliente** (`/cliente/<token>`, sem login): marca do estúdio, andamento, etapas, “o que precisamos de você” (o cliente responde com texto/link; a etapa vai para revisão e o estúdio é avisado). Acesso só por token (64 hex, `portal_open`/`portal_respond` com SECURITY DEFINER e campos mínimos); o estúdio pode desligar o link ou gerar outro.
+- **Rotinas automáticas** (worker diário `run_scheduled_scans`): lembrete de pendência do cliente (vencida ou sem resposta há 3+ dias) e **Resumo do dia** (uma vez por dia) nos alertas. Não envia e-mail: isso depende de provedor de e-mail e fica para depois.
+- Nada é enviado para fora automaticamente.

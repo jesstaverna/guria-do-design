@@ -29,10 +29,17 @@ export async function updateTask(back: string, id: string, fd: FormData) {
   const { supabase, ws } = await requireWritable('tarefas');
   const v = fields(fd);
   if (v.title.length < 2) flash(back, 'err', 'Descreva a tarefa.');
+  const { data: before } = await supabase.from('tasks').select('due_date, chain_pos').eq('id', id).eq('workspace_id', ws.id).maybeSingle();
+  // etapa do onboarding com prazo novo: as etapas seguintes acompanham (cronograma que se ajusta). Precisa rodar ANTES de gravar a data nova.
+  let shifted = 0;
+  if (before?.chain_pos != null && before.due_date && v.due_date && before.due_date !== v.due_date) {
+    const { error: e2, data } = await supabase.rpc('shift_chain', { p_task: id, p_new_due: v.due_date });
+    if (!e2) shifted = Number(data ?? 0);
+  }
   const { error } = await supabase.from('tasks').update({ ...v, status: pick(fd, 'status', STATUS, 'a_fazer') }).eq('id', id).eq('workspace_id', ws.id);
   if (error) flash(back, 'err', dbMessage(error));
   revalidatePath('/tarefas'); revalidatePath('/projetos');
-  flash(back, 'ok', 'Tarefa atualizada.');
+  flash(back, 'ok', shifted > 0 ? `Tarefa atualizada. ${shifted} etapa(s) seguinte(s) do cronograma foram ajustadas.` : 'Tarefa atualizada.');
 }
 
 export async function setTaskStatus(id: string, fd: FormData) {

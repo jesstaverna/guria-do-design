@@ -127,8 +127,9 @@ export async function activateProposal(id: string, fd: FormData) {
   if (!first) flash(`${BASE}/${id}`, 'err', 'Informe o primeiro vencimento.');
   const { error } = await supabase.rpc('activate_proposal', {
     p_id: id, p_installments: Math.min(Math.max(int(fd, 'installments', 1), 1), 36), p_first_due: first, p_create_project: fd.get('create_project') === 'on',
+    p_template: fd.get('create_project') === 'on' ? uuid(fd, 'template_id') : null,
   });
   if (error) flash(`${BASE}/${id}`, 'err', dbMessage(error, 'Não foi possível ativar o financeiro.'));
   revalidatePath('/financeiro');
-  flash(`${BASE}/${id}`, 'ok', 'Financeiro e projeto criados a partir da proposta.');
+  flash(`${BASE}/${id}`, 'ok', fd.get('create_project') === 'on' && uuid(fd, 'template_id') ? 'Financeiro, projeto e onboarding criados a partir da proposta.' : 'Financeiro e projeto criados a partir da proposta.');
 }

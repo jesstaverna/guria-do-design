@@ -26,7 +26,7 @@ export default async function Projetos({ searchParams }: { searchParams: Promise
   (tasks ?? []).forEach((t) => { const p = prog.get(t.project_id!) ?? { done: 0, total: 0 }; p.total++; if (t.status === 'feito') p.done++; prog.set(t.project_id!, p); });
   return (
     <>
-      <PageHeader title="Projetos" subtitle="Cada trabalho vendido vira um projeto com tarefas e prazo." actions={<Link href={sp.all ? '/projetos' : '/projetos?all=1'} className="btn btn-sm">{sp.all ? 'Só ativos' : 'Incluir concluídos'}</Link>} />
+      <PageHeader title="Projetos" subtitle="Cada trabalho vendido vira um projeto com tarefas e prazo." actions={<><Link href="/projetos/modelos" className="btn btn-sm">Modelos de onboarding</Link><Link href={sp.all ? '/projetos' : '/projetos?all=1'} className="btn btn-sm">{sp.all ? 'Só ativos' : 'Incluir concluídos'}</Link></>} />
       {open && (
         <details className="card mb-6 !p-4"><summary className="cursor-pointer text-sm font-medium">+ Novo projeto</summary>
           <form action={createProject} className="mt-4 grid gap-3 sm:grid-cols-4">

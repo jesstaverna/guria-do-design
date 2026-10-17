@@ -12,4 +12,5 @@ for f in migrations/*.sql; do echo ">> $f"; psql -q -o /dev/null -v ON_ERROR_STO
 psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/rules.test.sql
 psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/content.test.sql
 psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/prospecting.test.sql
+psql -q -o /dev/null -v ON_ERROR_STOP=1 < tests/onboarding.test.sql
 echo "OK — todos os testes SQL passaram"
