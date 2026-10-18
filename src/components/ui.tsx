@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { AutoIcon, hasIcon } from '@/components/Icon';
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (
@@ -10,12 +11,17 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   );
 }
 
-export function Stat({ label, value, hint, tone, href }: { label: string; value: ReactNode; hint?: ReactNode; tone?: 'danger' | 'ok' | 'accent'; href?: string }) {
+export function Stat({ label, value, hint, tone, href, icon }: { label: string; value: ReactNode; hint?: ReactNode; tone?: 'danger' | 'ok' | 'accent'; href?: string; icon?: string }) {
   const accent = tone === 'accent';
+  const chip = accent ? 'bg-white/20 text-on-accent' : tone === 'danger' ? 'bg-danger/10 text-danger' : tone === 'ok' ? 'bg-ok/10 text-ok' : 'bg-accent/10 text-accent';
+  const ic = hasIcon(label, icon) ? <AutoIcon text={label} icon={icon} className="h-[18px] w-[18px]" /> : null;
   const body = (
     <div className={`card h-full ${accent ? 'border-transparent bg-accent text-on-accent' : ''}`}>
-      <div className={`text-xs font-medium uppercase tracking-wider ${accent ? 'text-on-accent/70' : 'text-muted'}`}>{label}</div>
-      <div className={`mt-3 text-2xl font-semibold tracking-tight ${tone === 'danger' ? 'text-danger' : tone === 'ok' ? 'text-ok' : ''}`}>{value}</div>
+      <div className="flex items-start justify-between gap-3">
+        <div className={`text-xs font-medium uppercase tracking-wider ${accent ? 'text-on-accent/70' : 'text-muted'}`}>{label}</div>
+        {ic && <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl ${chip}`}>{ic}</span>}
+      </div>
+      <div className={`mt-2 text-2xl font-semibold tracking-tight ${tone === 'danger' ? 'text-danger' : tone === 'ok' ? 'text-ok' : ''}`}>{value}</div>
       {hint && <div className={`mt-1.5 text-xs ${accent ? 'text-on-accent/70' : 'text-muted'}`}>{hint}</div>}
     </div>
   );
@@ -56,10 +62,11 @@ export function Tabs({ items, current }: { items: { key: string; label: string; 
   );
 }
 
-export function Section({ title, actions, children }: { title: string; actions?: ReactNode; children: ReactNode }) {
+export function Section({ title, actions, children, icon }: { title: string; actions?: ReactNode; children: ReactNode; icon?: string }) {
+  const ic = typeof title === 'string' && hasIcon(title, icon) ? <AutoIcon text={title} icon={icon} className="h-4 w-4" /> : null;
   return (
     <section className="card">
-      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-base font-semibold">{title}</h2>{actions}</div>
+      <div className="mb-4 flex items-center justify-between gap-3"><h2 className="flex items-center gap-2 text-base font-semibold">{ic && <span className="grid h-7 w-7 place-items-center rounded-lg bg-accent/10 text-accent">{ic}</span>}{title}</h2>{actions}</div>
       {children}
     </section>
   );

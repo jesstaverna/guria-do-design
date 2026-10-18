@@ -3,6 +3,7 @@ import { requireWorkspace } from '@/lib/session';
 import { PageHeader, Section, Stat } from '@/components/ui';
 import { ProgressBar, RevenueChart } from '@/components/Charts';
 import { GOAL_KINDS, MONTHS_PT, NETWORKS, addDays, addMonths, goalProgress, monthRange, todayBR } from '@/lib/domain';
+import { ListChecks, Megaphone, SeverityIcon, CheckCircle2 } from '@/components/Icon';
 import { dateBR, money, moneyCompact, num, pct } from '@/lib/format';
 
 export const metadata = { title: 'Painel' };
@@ -91,12 +92,12 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             </Section>
           )}
           <Section title="Alertas" actions={<Link href="/alertas" className="text-xs underline">Ver todos</Link>}>
-            {!notes.data?.length ? <p className="text-sm text-muted">Tudo em ordem. ✅</p> : <ul className="space-y-2 text-sm">{notes.data.map((n) => <li key={n.id} className="flex gap-2"><span className={n.severity === 'critical' ? 'text-danger' : n.severity === 'warning' ? 'text-warn' : 'text-violet-brand'}>●</span>{n.link ? <Link href={n.link} className="hover:underline">{n.title}</Link> : n.title}</li>)}</ul>}
+            {!notes.data?.length ? <p className="flex items-center gap-2 text-sm text-muted"><CheckCircle2 className="h-4 w-4 text-ok" strokeWidth={1.8} aria-hidden />Tudo em ordem.</p> : <ul className="space-y-2.5 text-sm">{notes.data.map((n) => { const SI = SeverityIcon[n.severity as keyof typeof SeverityIcon] ?? SeverityIcon.info; return <li key={n.id} className="flex items-start gap-2.5"><SI className={`mt-0.5 h-4 w-4 shrink-0 ${n.severity === 'critical' ? 'text-danger' : n.severity === 'warning' ? 'text-warn' : 'text-violet-brand'}`} strokeWidth={1.8} aria-hidden />{n.link ? <Link href={n.link} className="hover:underline">{n.title}</Link> : n.title}</li>; })}</ul>}
           </Section>
           <Section title="Próximos prazos" actions={<Link href="/agenda" className="text-xs underline">Agenda</Link>}>
             {!tasks.data?.length && !posts.data?.length ? <p className="text-sm text-muted">Nada nos próximos 7 dias.</p> : <ul className="space-y-2 text-sm">
-              {tasks.data?.map((t) => <li key={t.id} className="flex justify-between gap-2"><span>{t.title}</span><span className={`shrink-0 ${t.due_date! < today ? 'font-medium text-danger' : 'text-muted'}`}>{dateBR(t.due_date)}</span></li>)}
-              {posts.data?.map((p) => <li key={p.id} className="flex justify-between gap-2"><Link href={`/conteudo/${p.id}`} className="hover:underline"><i className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: NETWORKS[p.network]?.color }} />{p.title}</Link><span className="shrink-0 text-muted">{dateBR(p.publish_date)}</span></li>)}</ul>}
+              {tasks.data?.map((t) => <li key={t.id} className="flex justify-between gap-2"><span className="flex items-start gap-2"><ListChecks className="mt-0.5 h-4 w-4 shrink-0 text-muted" strokeWidth={1.7} aria-hidden />{t.title}</span><span className={`shrink-0 ${t.due_date! < today ? 'font-medium text-danger' : 'text-muted'}`}>{dateBR(t.due_date)}</span></li>)}
+              {posts.data?.map((p) => <li key={p.id} className="flex justify-between gap-2"><Link href={`/conteudo/${p.id}`} className="flex items-start gap-2 hover:underline"><Megaphone className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.7} style={{ color: NETWORKS[p.network]?.color }} aria-hidden />{p.title}</Link><span className="shrink-0 text-muted">{dateBR(p.publish_date)}</span></li>)}</ul>}
           </Section>
         </div>
       </div>
