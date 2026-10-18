@@ -7,7 +7,7 @@ import { TaskCard, TaskFields } from '@/components/TaskParts';
 import { createTask } from '../../tarefas/actions';
 import { updateProject, startProjectOnboarding, savePortal, regeneratePortalLink } from '../actions';
 import { CopyButton } from '@/components/ClientButtons';
-import { APP_URL } from '@/lib/brand';
+import { appUrl } from '@/lib/appurl';
 import { dateBR } from '@/lib/format';
 import { TASK_STATUS } from '@/lib/domain';
 
@@ -26,7 +26,7 @@ export default async function ProjetoPage({ params }: { params: Promise<{ id: st
     supabase.from('onboarding_templates').select('id, name').eq('workspace_id', ws.id).eq('active', true).order('position'),
   ]);
   const chain = (tasks ?? []).filter((t) => t.chain_pos != null).sort((a, b) => (a.chain_pos ?? 0) - (b.chain_pos ?? 0));
-  const portalLink = `${APP_URL}/cliente/${p.portal_token}`;
+  const portalLink = `${await appUrl()}/cliente/${p.portal_token}`;
   const mem = (members ?? []).map((m) => ({ id: m.user_id, name: (m.profile as unknown as { full_name: string }).full_name }));
   const back = `/projetos/${id}`;
   const thisProject = [{ id, name: p.name }];

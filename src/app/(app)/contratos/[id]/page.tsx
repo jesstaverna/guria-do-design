@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { APP_URL } from '@/lib/brand';
+import { appUrl } from '@/lib/appurl';
 import { requireWorkspace } from '@/lib/session';
 import { Badge, Field, PageHeader, Section } from '@/components/ui';
 import { CopyButton, PrintButton } from '@/components/ClientButtons';
@@ -13,6 +13,7 @@ import { cancelContract, saveContract, sendContract } from '../actions';
 export const metadata = { title: 'Contrato' };
 
 export default async function ContractPage({ params }: { params: Promise<{ id: string }> }) {
+  const base = await appUrl();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const { supabase, ws, open } = await requireWorkspace('contratos');
@@ -27,7 +28,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
       <PageHeader title={`#${c.number} · ${c.title}`} subtitle={client ? `Cliente: ${client.name}` : undefined} actions={<>
         <Badge tone={CONTRACT_STATUS[c.status]?.tone}>{CONTRACT_STATUS[c.status]?.label}</Badge>
         <PrintButton label="Imprimir / PDF" />
-        {c.status !== 'rascunho' && c.status !== 'cancelado' && <CopyButton text={`${APP_URL}/c/${c.token}`} label="Copiar link de assinatura" />}
+        {c.status !== 'rascunho' && c.status !== 'cancelado' && <CopyButton text={`${base}/c/${c.token}`} label="Copiar link de assinatura" />}
         {open && draft && <form action={sendContract.bind(null, id)}><SubmitButton className="btn btn-primary btn-sm" pendingText="…" confirm="Liberar o contrato para assinatura? O texto ficará bloqueado.">Liberar para assinatura</SubmitButton></form>}
       </>} />
       {draft && missing > 0 && <p className="mb-4 rounded-xl bg-amber-500/15 p-3 text-sm text-warn">Há {missing} campo(s) <b>[________]</b> a preencher no texto antes de enviar.</p>}
@@ -52,7 +53,7 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
               </dl>
             </Section>
           )}
-          {c.status === 'enviado' && <Section title="Aguardando assinatura"><p className="text-sm text-muted">Enviado em {dateTimeBR(c.sent_at)}. Link: <span className="break-all">{APP_URL}/c/{c.token}</span></p></Section>}
+          {c.status === 'enviado' && <Section title="Aguardando assinatura"><p className="text-sm text-muted">Enviado em {dateTimeBR(c.sent_at)}. Link: <span className="break-all">{base}/c/{c.token}</span></p></Section>}
           {c.proposal_id && <Link href={`/propostas/${c.proposal_id}`} className="btn w-full">Ver proposta de origem</Link>}
           {open && c.status !== 'cancelado' && c.status !== 'rascunho' && <form action={cancelContract.bind(null, id)}><SubmitButton className="text-xs text-danger underline" pendingText="…" confirm="Cancelar este contrato? Esta ação não pode ser desfeita.">Cancelar contrato</SubmitButton></form>}
         </div>

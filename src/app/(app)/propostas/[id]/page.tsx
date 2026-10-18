@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { APP_URL } from '@/lib/brand';
+import { appUrl } from '@/lib/appurl';
 import { suggestTemplate } from '@/lib/onboarding';
 import { requireWorkspace } from '@/lib/session';
 import { Badge, Field, PageHeader, Section } from '@/components/ui';
@@ -30,7 +30,7 @@ export default async function ProposalEditor({ params }: { params: Promise<{ id:
   ]);
   const suggested = suggestTemplate(`${p.title} ${(items ?? []).map((i) => i.name).join(' ')}`, templates ?? []);
   const locked = p.status === 'aceita' || !open;
-  const link = `${APP_URL}/p/${p.token}`;
+  const link = `${await appUrl()}/p/${p.token}`;
   const st = PROPOSAL_STATUS[p.status];
   const isOpen = ['enviada', 'visualizada', 'em_negociacao'].includes(p.status);
 

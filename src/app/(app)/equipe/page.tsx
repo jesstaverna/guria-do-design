@@ -1,4 +1,4 @@
-import { APP_URL } from '@/lib/brand';
+import { appUrl } from '@/lib/appurl';
 import { requireWorkspace } from '@/lib/session';
 import { Badge, Field, PageHeader, Section } from '@/components/ui';
 import { CopyButton } from '@/components/ClientButtons';
@@ -11,6 +11,7 @@ import { invite, removeMember, revokeInvite, setRole } from './actions';
 export const metadata = { title: 'Equipe' };
 
 export default async function Equipe() {
+  const base = await appUrl();
   const { supabase, ws, user, open } = await requireWorkspace('equipe');
   const [{ data: members }, { data: invites }, { data: plan }] = await Promise.all([
     supabase.from('workspace_members').select('id, user_id, role, created_at, profile:profiles(full_name, email, avatar_url)').eq('workspace_id', ws.id).eq('active', true).order('created_at'),
@@ -38,7 +39,7 @@ export default async function Equipe() {
           <p className="mt-2 text-xs text-muted">O convite vale por 7 dias e só funciona para o e-mail informado. Envie o link por WhatsApp ou e-mail.</p>
           {!!invites?.length && <ul className="mt-5 space-y-2 border-t border-line pt-4">{invites.map((i) => (
             <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 text-sm"><span>{i.email} <span className="text-muted">· {i.role === 'admin' ? 'Administrador' : 'Equipe'} · expira {dateBR(i.expires_at)}</span></span>
-              <span className="flex gap-2"><CopyButton text={`${APP_URL}/convite/${i.token}`} label="Copiar link" /><form action={revokeInvite.bind(null, i.id)}><SubmitButton className="btn btn-sm" pendingText="…">Cancelar</SubmitButton></form></span></li>))}</ul>}
+              <span className="flex gap-2"><CopyButton text={`${base}/convite/${i.token}`} label="Copiar link" /><form action={revokeInvite.bind(null, i.id)}><SubmitButton className="btn btn-sm" pendingText="…">Cancelar</SubmitButton></form></span></li>))}</ul>}
         </Section>
       )}
     </>
