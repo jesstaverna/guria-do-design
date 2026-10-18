@@ -1,3 +1,4 @@
+import { appUrl } from '@/lib/appurl';
 import Link from 'next/link';
 import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
@@ -10,7 +11,7 @@ async function request(fd: FormData) {
   'use server';
   const email = String(fd.get('email') ?? '').trim();
   const h = await headers();
-  const origin = process.env.NEXT_PUBLIC_APP_URL || `https://${h.get('host')}`;
+  const origin = await appUrl();
   await (await createClient()).auth.resetPasswordForEmail(email, { redirectTo: `${origin}/auth/callback?next=/redefinir-senha` });
   // Resposta igual exista ou não a conta (não revela cadastros).
   flash('/esqueci-senha', 'ok', 'Se o e-mail estiver cadastrado, enviamos um link para redefinir a senha.');
